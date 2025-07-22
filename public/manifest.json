@@ -1,0 +1,38 @@
+{
+  "name": "Bahasa Inggrisnya... - Inglify",
+  "short_name": "Inglify",
+  "description": "Terjemahkan teks Indonesia ke berbagai gaya bahasa menggunakan AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "id",
+  "categories": ["productivity", "education", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Terjemahkan Teks",
+      "short_name": "Terjemah",
+      "description": "Langsung ke form terjemahan",
+      "url": "/#translation-form",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

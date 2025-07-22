@@ -1,52 +1,82 @@
-# Astro Starter Kit: Basics
+# Inglify - Terjemahan Multi-Gaya
 
-```sh
-npm create astro@latest -- --template basics
+Aplikasi web untuk menerjemahkan teks dari Bahasa Indonesia ke berbagai gaya bahasa menggunakan AI Google Gemini Flash 2.5.
+
+## Fitur
+
+- 🌐 **Multi-bahasa**: Terjemahkan ke 8 bahasa berbeda (Inggris, Jepang, Korea, Mandarin, Prancis, Spanyol, Jerman, Arab)
+- 🎭 **6 Gaya Bahasa**: Formal, Casual, Friendly, Professional, Simple, Persuasive
+- 📱 **Responsif**: Desain mobile-first yang optimal di semua perangkat
+- 💾 **Riwayat Lokal**: Simpan dan kelola riwayat terjemahan di localStorage
+- ⚡ **Performa Tinggi**: Dibangun dengan Astro untuk loading yang cepat
+- 🎨 **UI Modern**: Menggunakan Tailwind CSS untuk tampilan yang bersih
+
+## Teknologi
+
+- **Framework**: Astro (React)
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
+- **AI**: Google Gemini Flash 2.5 API
+- **Storage**: localStorage
+
+## Instalasi
+
+1. Install dependencies:
+```bash
+npm install
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+2. Setup environment variables:
+```bash
+cp .env.example .env
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+3. Dapatkan API key dari [Google AI Studio](https://makersuite.google.com/app/apikey) dan tambahkan ke file `.env`:
+```
+GEMINI_API_KEY=your_api_key_here
+```
 
-## 🧞 Commands
+4. Jalankan development server:
+```bash
+npm run dev
+```
 
-All commands are run from the root of the project, from a terminal:
+5. Buka browser dan akses `http://localhost:4321`
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## Struktur Proyek
 
-## 👀 Want to learn more?
+```
+src/
+├── components/
+│   ├── TranslationForm.astro    # Form input teks & pilih bahasa
+│   ├── TranslationResult.astro  # Tampilan hasil multi-gaya
+│   └── HistoryList.astro        # Riwayat terjemahan
+├── layouts/
+│   └── Layout.astro             # Layout utama
+├── pages/
+│   ├── index.astro              # Halaman utama
+│   └── api/
+│       └── gemini.ts            # API route untuk Gemini
+├── types/
+│   └── translation.ts           # Definisi tipe data
+├── utils/
+│   └── generatePrompt.ts        # Generator prompt untuk AI
+└── styles/
+    └── global.css               # Global styles
+```
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Cara Penggunaan
+
+1. **Input Teks**: Masukkan teks dalam Bahasa Indonesia
+2. **Pilih Bahasa**: Pilih bahasa target (default: Bahasa Inggris)
+3. **Terjemahkan**: Klik tombol "Terjemahkan"
+4. **Lihat Hasil**: Dapatkan 6 versi terjemahan dengan gaya berbeda
+5. **Salin Teks**: Klik ikon copy untuk menyalin terjemahan
+6. **Lihat Riwayat**: Akses riwayat terjemahan di bagian bawah
+
+## Build untuk Production
+
+```bash
+npm run build
+npm run preview
+```

@@ -1,0 +1,151 @@
+---
+import { TRANSLATION_TONES } from '../types/translation';
+---
+
+<div id="translation-results" class="hidden">
+  <div class="bg-gray-800 rounded-lg p-4 mb-4 border border-gray-700">
+    <h3 class="text-base font-semibold text-gray-200 mb-2">Teks Asli:</h3>
+    <p id="original-text" class="text-gray-300 bg-gray-700 p-3 rounded border border-gray-600 text-sm"></p>
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    {TRANSLATION_TONES.map(tone => (
+      <div class="bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-700">
+        <div class="flex items-center justify-between mb-2">
+          <h4 class="text-base font-semibold text-gray-200">{tone.label}</h4>
+          <div class="flex space-x-2">
+            <button 
+              class="speak-btn text-gray-400 hover:text-green-400 transition-colors"
+              data-tone={tone.name}
+              title="Dengarkan terjemahan"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M9 12a3 3 0 106 0v-6a3 3 0 00-6 0v6z"></path>
+              </svg>
+            </button>
+            <button 
+              class="copy-btn text-gray-400 hover:text-blue-400 transition-colors"
+              data-tone={tone.name}
+              title="Salin terjemahan"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mb-3">{tone.description}</p>
+        <div class="bg-gray-700 p-3 rounded border border-gray-600">
+          <p id={`translation-${tone.name}`} class="text-gray-200 leading-relaxed text-sm"></p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  import type { TranslationResponse } from '../types/translation';
+  import { SUPPORTED_LANGUAGES } from '../types/translation';
+  
+  const resultsContainer = document.getElementById('translation-results') as HTMLDivElement;
+  const originalTextElement = document.getElementById('original-text') as HTMLParagraphElement;
+  
+  // Listen for translation complete event
+  window.addEventListener('translation-complete', (event: Event) => {
+    const customEvent = event as CustomEvent<TranslationResponse>;
+    const { results, originalText, targetLanguage } = customEvent.detail;
+    
+    // Update original text
+    originalTextElement.textContent = originalText;
+    
+    // Update translations
+    results.forEach(result => {
+      const element = document.getElementById(`translation-${result.tone}`) as HTMLParagraphElement;
+      if (element) {
+        element.textContent = result.translation;
+      }
+    });
+    
+    // Show results
+    resultsContainer.classList.remove('hidden');
+    
+    // Scroll to results
+    resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    
+    // Update page title
+    const targetLang = SUPPORTED_LANGUAGES.find(lang => lang.code === targetLanguage);
+    if (targetLang) {
+      document.title = `Bahasa ${targetLang.label}nya... - Inglify`;
+    }
+  });
+  
+  // Text-to-Speech functionality
+  let currentSpeech: SpeechSynthesisUtterance | null = null;
+  
+  function speakText(text: string) {
+    if ('speechSynthesis' in window) {
+      // Stop any current speech
+      if (currentSpeech) {
+        speechSynthesis.cancel();
+      }
+      
+      currentSpeech = new SpeechSynthesisUtterance(text);
+      currentSpeech.lang = 'en-US';
+      currentSpeech.rate = 0.8;
+      currentSpeech.pitch = 1;
+      
+      speechSynthesis.speak(currentSpeech);
+    }
+  }
+  
+  // Copy functionality
+  document.addEventListener('click', async (e) => {
+    const target = e.target as HTMLElement;
+    
+    // Handle speak button
+    const speakBtn = target.closest('.speak-btn') as HTMLButtonElement;
+    if (speakBtn) {
+      const tone = speakBtn.dataset.tone;
+      const translationElement = document.getElementById(`translation-${tone}`) as HTMLParagraphElement;
+      
+      if (translationElement && translationElement.textContent) {
+        speakText(translationElement.textContent);
+        
+        // Visual feedback
+        speakBtn.classList.add('text-green-400');
+        setTimeout(() => {
+          speakBtn.classList.remove('text-green-400');
+        }, 2000);
+      }
+    }
+    
+    // Handle copy button
+    const copyBtn = target.closest('.copy-btn') as HTMLButtonElement;
+    if (copyBtn) {
+      const tone = copyBtn.dataset.tone;
+      const translationElement = document.getElementById(`translation-${tone}`) as HTMLParagraphElement;
+      
+      if (translationElement && translationElement.textContent) {
+        try {
+          await navigator.clipboard.writeText(translationElement.textContent);
+          
+          // Show feedback
+          const originalIcon = copyBtn.innerHTML;
+          copyBtn.innerHTML = `
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          `;
+          
+          setTimeout(() => {
+            copyBtn.innerHTML = originalIcon;
+          }, 2000);
+          
+        } catch (err) {
+          console.error('Failed to copy text:', err);
+          alert('Gagal menyalin teks');
+        }
+      }
+    }
+  });
+</script>

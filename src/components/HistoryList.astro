@@ -1,0 +1,158 @@
+---
+---
+
+<div class="bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-700">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-lg font-semibold text-gray-200">Riwayat Terjemahan</h3>
+    <button
+      id="clear-history-btn"
+      class="text-red-400 hover:text-red-300 text-xs font-medium transition-colors"
+    >
+      Hapus Semua
+    </button>
+  </div>
+  
+  <div id="history-container">
+    <div id="empty-history" class="text-center py-6">
+      <p class="text-gray-400 text-sm">Belum ada riwayat terjemahan</p>
+    </div>
+    
+    <div id="history-list" class="space-y-2"></div>
+  </div>
+</div>
+
+<script>
+  import type { HistoryItem } from '../types/translation';
+  import { SUPPORTED_LANGUAGES } from '../types/translation';
+  
+  const historyContainer = document.getElementById('history-container') as HTMLDivElement;
+  const emptyHistory = document.getElementById('empty-history') as HTMLDivElement;
+  const historyList = document.getElementById('history-list') as HTMLDivElement;
+  const clearHistoryBtn = document.getElementById('clear-history-btn') as HTMLButtonElement;
+  
+  function formatDate(timestamp: number): string {
+    const date = new Date(timestamp);
+    return date.toLocaleString('id-ID', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  function getLanguageLabel(code: string): string {
+    const lang = SUPPORTED_LANGUAGES.find(l => l.code === code);
+    return lang ? lang.label : code;
+  }
+  
+  function renderHistory() {
+    const history: HistoryItem[] = JSON.parse(localStorage.getItem('translation-history') || '[]');
+    
+    if (history.length === 0) {
+      emptyHistory.classList.remove('hidden');
+      historyList.classList.add('hidden');
+      clearHistoryBtn.style.display = 'none';
+      return;
+    }
+    
+    emptyHistory.classList.add('hidden');
+    historyList.classList.remove('hidden');
+    clearHistoryBtn.style.display = 'block';
+    
+    historyList.innerHTML = history.map(item => `
+      <div class="bg-gray-800 rounded-lg border border-gray-700 p-3 hover:bg-gray-750 transition-colors">
+        <div class="flex items-start justify-between mb-2">
+          <div class="flex-1">
+            <p class="text-xs text-gray-300 mb-1 truncate">
+              <span class="font-medium">Ke ${getLanguageLabel(item.targetLanguage)}</span> • 
+              <span>${formatDate(item.timestamp)}</span>
+            </p>
+            <p class="text-gray-200 font-medium mb-2 line-clamp-2 text-sm">${item.originalText}</p>
+          </div>
+          <button 
+            class="delete-item-btn text-gray-400 hover:text-red-400 transition-colors ml-2"
+            data-id="${item.id}"
+            title="Hapus item ini"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
+          ${item.results.map(result => `
+            <div class="bg-gray-700 p-2 rounded text-xs">
+              <div class="font-medium text-gray-300 mb-1 capitalize">${result.tone}</div>
+              <div class="text-gray-400 line-clamp-2">${result.translation}</div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <button 
+          class="restore-btn text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors"
+          data-item='${JSON.stringify(item)}'
+        >
+          Muat
+        </button>
+      </div>
+    `).join('');
+  }
+  
+  // Clear all history
+  clearHistoryBtn.addEventListener('click', () => {
+    if (confirm('Apakah Anda yakin ingin menghapus semua riwayat terjemahan?')) {
+      localStorage.removeItem('translation-history');
+      renderHistory();
+    }
+  });
+  
+  // Delete individual item
+  historyList.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const deleteBtn = target.closest('.delete-item-btn') as HTMLButtonElement;
+    const restoreBtn = target.closest('.restore-btn') as HTMLButtonElement;
+    
+    if (deleteBtn) {
+      const itemId = deleteBtn.dataset.id;
+      if (confirm('Hapus item ini dari riwayat?')) {
+        const history: HistoryItem[] = JSON.parse(localStorage.getItem('translation-history') || '[]');
+        const filteredHistory = history.filter(item => item.id !== itemId);
+        localStorage.setItem('translation-history', JSON.stringify(filteredHistory));
+        renderHistory();
+      }
+    }
+    
+    if (restoreBtn) {
+      const item: HistoryItem = JSON.parse(restoreBtn.dataset.item || '{}');
+      
+      // Dispatch event to show this translation
+      window.dispatchEvent(new CustomEvent('translation-complete', {
+        detail: {
+          results: item.results,
+          originalText: item.originalText,
+          targetLanguage: item.targetLanguage,
+          timestamp: item.timestamp
+        }
+      }));
+    }
+  });
+  
+  // Listen for new translations to update history
+  window.addEventListener('translation-complete', () => {
+    setTimeout(renderHistory, 100); // Small delay to ensure localStorage is updated
+  });
+  
+  // Initial render
+  renderHistory();
+</script>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
