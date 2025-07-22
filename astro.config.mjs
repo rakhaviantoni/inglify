@@ -3,15 +3,13 @@ import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node';
+import netlify from '@astrojs/netlify';
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
   output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
+  adapter: netlify(),
   site: 'https://inglify.rakhaviantoni.com',
   base: '/',
   vite: {
