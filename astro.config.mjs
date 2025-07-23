@@ -9,7 +9,9 @@ import netlify from '@astrojs/netlify';
 export default defineConfig({
   integrations: [react()],
   output: 'server',
-  adapter: netlify(),
+  adapter: netlify({
+    edgeMiddleware: true,
+  }),
   site: 'https://inglify.rakhaviantoni.com',
   base: '/',
   vite: {
