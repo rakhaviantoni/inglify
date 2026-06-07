@@ -10,17 +10,19 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function signInWithEmail(email: string): Promise<{ error: string | null }> {
-  const supabase = getSupabaseClient();
-  if (!supabase) return { error: 'Supabase not configured' };
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
 
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: window.location.origin,
-    },
-  });
-
-  return { error: error?.message || null };
+    const data = await res.json();
+    if (!res.ok) return { error: data.error || 'Gagal kirim email' };
+    return { error: null };
+  } catch {
+    return { error: 'Gagal terhubung ke server' };
+  }
 }
 
 export async function signOut(): Promise<void> {
