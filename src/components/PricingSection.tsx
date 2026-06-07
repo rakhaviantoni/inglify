@@ -26,7 +26,7 @@ const PricingSection: React.FC = () => {
             <FeatureRow included text="Tantangan harian" />
             <FeatureRow included={false} text="Gaya slang, puitis, akademis, marketing" />
             <FeatureRow included={false} text="Regenerate per gaya (unlimited)" />
-            <FeatureRow included={false} text="Cloud sync & leaderboard" />
+            <FeatureRow included={false} text="Global leaderboard" />
             <FeatureRow included={false} text="Phrasebook unlimited" />
           </ul>
         </div>
@@ -39,15 +39,15 @@ const PricingSection: React.FC = () => {
           <h4 className="text-sm font-semibold text-orange-400 mb-1">Pro</h4>
           <div className="flex items-baseline gap-1 mb-3">
             <span className="text-xl font-bold text-gray-100">Rp15.000</span>
-            <span className="text-xs text-gray-500">/ bulan</span>
+            <span className="text-xs text-gray-500">lifetime</span>
           </div>
           <ul className="space-y-2">
             <FeatureRow included text="Semua fitur Free" />
             <FeatureRow included text="10 gaya terjemahan (+ slang, puitis, akademis, marketing)" />
             <FeatureRow included text="Regenerate unlimited per gaya" />
-            <FeatureRow included text="Cloud sync riwayat" />
             <FeatureRow included text="Global leaderboard" />
             <FeatureRow included text="Phrasebook unlimited" />
+            <FeatureRow included text="Cloud sync riwayat" />
             <FeatureRow included text="Tanpa iklan (soon)" />
             <FeatureRow included text="Priority support via DM" />
           </ul>
@@ -61,7 +61,9 @@ const PricingSection: React.FC = () => {
             <Sparkle size={14} weight="fill" />
             Upgrade via Trakteer
           </a>
-          <p className="text-[10px] text-gray-500 text-center mt-2">3 unit kopi = 1 bulan Pro</p>
+          <p className="text-[10px] text-gray-500 text-center mt-2">
+            3 unit kopi = Pro lifetime. Sertakan Device ID di pesan.
+          </p>
         </div>
       </div>
 

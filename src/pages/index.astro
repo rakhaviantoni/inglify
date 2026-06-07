@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.tsx';
+import ProfilePanel from '../components/ProfilePanel.tsx';
 import TranslationForm from '../components/TranslationForm.tsx';
 import TranslationResult from '../components/TranslationResult.tsx';
 import HistoryList from '../components/HistoryList.tsx';
@@ -17,6 +18,9 @@ import PricingSection from '../components/PricingSection.tsx';
 		<div class="container mx-auto px-4 py-8 max-w-4xl">
 			<!-- Header -->
 			<Header client:load />
+
+			<!-- Profile / Auth -->
+			<ProfilePanel client:load />
 
 			<!-- Gamification Bar -->
 			<GamificationBar client:load />

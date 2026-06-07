@@ -47,6 +47,7 @@ const TranslationForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -130,14 +131,22 @@ const TranslationForm: React.FC = () => {
       const customEvent = event as CustomEvent<{ targetLanguage: string }>;
       setTargetLanguage(customEvent.detail.targetLanguage);
     };
+
+    // Listen for premium status
+    const handlePremiumChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{ isPremium: boolean }>;
+      setIsPremium(customEvent.detail.isPremium);
+    };
     
     window.addEventListener('header-language-changed', handleHeaderLanguageChange);
     window.addEventListener('set-language', handleSetLanguage);
+    window.addEventListener('premium-status-changed', handlePremiumChange);
     
     return () => {
-      document.addEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('header-language-changed', handleHeaderLanguageChange);
       window.removeEventListener('set-language', handleSetLanguage);
+      window.removeEventListener('premium-status-changed', handlePremiumChange);
     };
   }, []);
 
@@ -175,7 +184,7 @@ const TranslationForm: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ text, targetLanguage })
+          body: JSON.stringify({ text, targetLanguage, premium: isPremium })
         });
         
         if (!response.ok) {

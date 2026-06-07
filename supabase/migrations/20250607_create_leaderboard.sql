@@ -1,7 +1,7 @@
--- Inglify tables - shared Supabase instance with bayipintar and others
--- Convention: `app` column to distinguish data per project
+-- Inglify tables — shared Supabase instance with bayipintar
+-- Convention: `app` column to scope data per project, `device_id` for device-based premium
 
--- Leaderboard (app-scoped)
+-- Leaderboard
 CREATE TABLE IF NOT EXISTS public.leaderboard (
   id BIGSERIAL PRIMARY KEY,
   app TEXT NOT NULL DEFAULT 'inglify',
@@ -16,33 +16,37 @@ CREATE TABLE IF NOT EXISTS public.leaderboard (
 
 CREATE INDEX IF NOT EXISTS idx_leaderboard_app_xp ON public.leaderboard(app, xp DESC);
 
+-- Translation history (cloud sync)
+CREATE TABLE IF NOT EXISTS public.translation_history (
+  id TEXT PRIMARY KEY,
+  app TEXT NOT NULL DEFAULT 'inglify',
+  user_id UUID NOT NULL,
+  original_text TEXT NOT NULL,
+  target_language TEXT NOT NULL,
+  results JSONB NOT NULL DEFAULT '[]',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_history_user ON public.translation_history(user_id, app, created_at DESC);
+
 -- RLS
 ALTER TABLE public.leaderboard ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.translation_history ENABLE ROW LEVEL SECURITY;
+
+-- Leaderboard: public read/write
 CREATE POLICY "leaderboard_read" ON public.leaderboard FOR SELECT USING (true);
 CREATE POLICY "leaderboard_insert" ON public.leaderboard FOR INSERT WITH CHECK (true);
 CREATE POLICY "leaderboard_update" ON public.leaderboard FOR UPDATE USING (true);
 
--- NOTE: `purchases` table already exists (shared with bayipintar).
--- Inglify uses it with app = 'inglify' for trakteer donations.
--- If `purchases` doesn't exist yet, uncomment below:
+-- Translation history: user can manage own
+CREATE POLICY "history_read_own" ON public.translation_history
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "history_insert_own" ON public.translation_history
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "history_update_own" ON public.translation_history
+  FOR UPDATE USING (auth.uid() = user_id);
 
--- CREATE TABLE IF NOT EXISTS public.purchases (
---   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
---   app TEXT NOT NULL DEFAULT 'inglify',
---   device_id TEXT,
---   transaction_id TEXT,
---   supporter_name TEXT,
---   supporter_message TEXT,
---   quantity INTEGER DEFAULT 1,
---   price NUMERIC DEFAULT 0,
---   net_amount NUMERIC DEFAULT 0,
---   status TEXT DEFAULT 'completed',
---   created_at TIMESTAMPTZ DEFAULT now(),
---   UNIQUE(app, transaction_id)
--- );
---
--- CREATE INDEX IF NOT EXISTS idx_purchases_app_device ON public.purchases(app, device_id, status);
---
--- ALTER TABLE public.purchases ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "purchases_read_own" ON public.purchases FOR SELECT USING (true);
--- CREATE POLICY "purchases_insert" ON public.purchases FOR INSERT WITH CHECK (true);
+-- NOTE: `purchases` table already exists from bayipintar.
+-- Schema: id, app, device_id, transaction_id, provider, plan, amount, status, meta, created_at
+-- Index: (app, device_id, status)
+-- Inglify checks: app='inglify', device_id=X, status='active'
