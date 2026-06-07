@@ -4,31 +4,57 @@ import Header from '../components/Header.tsx';
 import TranslationForm from '../components/TranslationForm.tsx';
 import TranslationResult from '../components/TranslationResult.tsx';
 import HistoryList from '../components/HistoryList.tsx';
+import GamificationBar from '../components/GamificationBar.tsx';
+import DailyChallenge from '../components/DailyChallenge.tsx';
+import WordOfTheDay from '../components/WordOfTheDay.tsx';
+import PhrasebookPanel from '../components/PhrasebookPanel.tsx';
+import Leaderboard from '../components/Leaderboard.tsx';
 ---
 
-<Layout title="Bahasa Inggrisnya... - Inglify" description="Terjemahkan teks Anda ke bahasa Inggris dengan berbagai gaya dan nada yang sesuai dengan konteks">
+<Layout title="Bahasa Inggrisnya... - Inglify" description="Terjemahkan teks Bahasa Indonesia ke 70+ bahasa dengan berbagai gaya dan nada menggunakan AI. Gratis, cepat, dan akurat.">
 	<main class="min-h-screen bg-gray-900 text-white relative">
-		<div class="container mx-auto px-4 py-8">
+		<div class="container mx-auto px-4 py-8 max-w-4xl">
 			<!-- Header -->
 			<Header client:load />
+
+			<!-- Gamification Bar -->
+			<GamificationBar client:load />
+
+			<!-- Daily Challenge -->
+			<DailyChallenge client:load />
 
 			<!-- Translation Form -->
 			<TranslationForm client:load />
 			
 			<!-- Translation Results -->
 			<TranslationResult client:load />
+
+			<!-- Word of the Day -->
+			<WordOfTheDay client:load />
+
+			<!-- Phrasebook -->
+			<PhrasebookPanel client:load />
 			
 			<!-- History -->
 			<HistoryList client:load />
 
+			<!-- Leaderboard -->
+			<Leaderboard client:load />
+
 			<!-- Footer -->
 			<footer class="text-center mt-12 pt-8 border-t border-gray-700">
 				<div class="flex flex-col items-center space-y-4">
+					<!-- Donation -->
+					<a
+						href="https://trakteer.id/rakhaviantoni?quantity=1"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-sm font-medium rounded-full hover:from-orange-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+					>
+						☕ Traktir Kopi
+					</a>
+
 					<div class="flex items-center space-x-1">
-						<!-- <p class="text-gray-400 text-sm">
-							Powered by <a href="https://ai.google.dev/" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Google Gemini AI</a>
-						</p>
-						<span class="text-gray-600">•</span> -->
 						<p class="text-gray-400 text-sm">
 							Built by <a href="https://rakhaviantoni.com" target="_blank" class="text-orange-400 hover:text-orange-300 transition-colors">Rakha Viantoni</a>
 						</p>

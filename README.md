@@ -1,82 +1,96 @@
 # Inglify - Terjemahan Multi-Gaya
 
-Aplikasi web untuk menerjemahkan teks dari Bahasa Indonesia ke berbagai gaya bahasa menggunakan AI Google Gemini Flash 2.5.
+Aplikasi web untuk menerjemahkan teks dari Bahasa Indonesia ke 70+ bahasa dengan berbagai gaya dan nada menggunakan AI.
 
 ## Fitur
 
-- 🌐 **Multi-bahasa**: Terjemahkan ke 8 bahasa berbeda (Inggris, Jepang, Korea, Mandarin, Prancis, Spanyol, Jerman, Arab)
-- 🎭 **6 Gaya Bahasa**: Formal, Casual, Friendly, Professional, Simple, Persuasive
-- 📱 **Responsif**: Desain mobile-first yang optimal di semua perangkat
-- 💾 **Riwayat Lokal**: Simpan dan kelola riwayat terjemahan di localStorage
-- ⚡ **Performa Tinggi**: Dibangun dengan Astro untuk loading yang cepat
-- 🎨 **UI Modern**: Menggunakan Tailwind CSS untuk tampilan yang bersih
+- 🌍 **70+ Bahasa Target** — Inggris, Jepang, Korea, Mandarin, dll.
+- 🎭 **10 Gaya Terjemahan** — Formal, Casual, Friendly, Professional, Simple, Persuasive + Premium (Slang, Poetic, Academic, Marketing)
+- 🎮 **Gamifikasi** — XP, Level, Streak, dan 9 Achievements
+- 🎯 **Tantangan Harian** — Frasa baru setiap hari dengan bonus XP
+- 📖 **Word of the Day** — Pelajari kosakata baru setiap hari
+- 📚 **Phrasebook** — Simpan dan organisir terjemahan berdasarkan topik
+- 🏆 **Leaderboard** — Bersaing dengan pengguna lain (via Supabase)
+- 🎤 **Voice Input** — Dikte teks dengan speech recognition
+- 🔊 **Text-to-Speech** — Dengarkan terjemahan
+- 📋 **Copy to Clipboard** — Salin terjemahan dengan satu klik
+- 💾 **Offline Cache** — Terjemahan yang pernah dibuat tersedia offline
+- 📱 **PWA** — Installable, offline-ready app shell
+- 📊 **Translation History** — Riwayat 50 terjemahan terakhir
 
-## Teknologi
+## Tech Stack
 
-- **Framework**: Astro (React)
-- **Styling**: Tailwind CSS
+- **Framework**: Astro 5 + React 19
+- **Styling**: Tailwind CSS 4
+- **AI**: SumoPod AI (OpenAI-compatible API)
+- **Database**: Supabase (leaderboard, future auth)
+- **Storage**: localStorage (history, gamification, phrasebooks, cache)
+- **Deployment**: Netlify (SSR + Edge)
 - **Language**: TypeScript
-- **AI**: Google Gemini Flash 2.5 API
-- **Storage**: localStorage
 
-## Instalasi
+## Setup
 
-1. Install dependencies:
+1. Clone repository ini
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Setup environment variables:
+3. Copy `.env.example` ke `.env` dan isi API keys:
+```
+AI_KEY=your_sumopod_ai_key
+PUBLIC_SUPABASE_URL=your_supabase_url
+PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. (Optional) Setup Supabase leaderboard table — jalankan migration:
 ```bash
-cp .env.example .env
+supabase db push
 ```
 
-3. Dapatkan API key dari [Google AI Studio](https://makersuite.google.com/app/apikey) dan tambahkan ke file `.env`:
-```
-GEMINI_API_KEY=your_api_key_here
-```
-
-4. Jalankan development server:
+5. Jalankan development server:
 ```bash
 npm run dev
 ```
 
-5. Buka browser dan akses `http://localhost:4321`
-
-## Struktur Proyek
+## Struktur Project
 
 ```
 src/
 ├── components/
-│   ├── TranslationForm.astro    # Form input teks & pilih bahasa
-│   ├── TranslationResult.astro  # Tampilan hasil multi-gaya
-│   └── HistoryList.astro        # Riwayat terjemahan
+│   ├── Header.tsx                # Header & branding
+│   ├── GamificationBar.tsx       # XP, level, streak, achievements
+│   ├── DailyChallenge.tsx        # Tantangan harian
+│   ├── TranslationForm.tsx       # Form input terjemahan
+│   ├── TranslationResult.tsx     # Hasil terjemahan (free + premium tones)
+│   ├── WordOfTheDay.tsx          # Kosakata harian
+│   ├── PhrasebookPanel.tsx       # Organisir frasa favorit
+│   ├── HistoryList.tsx           # Riwayat terjemahan
+│   └── Leaderboard.tsx           # Global leaderboard
 ├── layouts/
-│   └── Layout.astro             # Layout utama
+│   └── Layout.astro              # Layout utama (SEO, PWA, structured data)
 ├── pages/
-│   ├── index.astro              # Halaman utama
+│   ├── index.astro               # Halaman utama
 │   └── api/
-│       └── gemini.ts            # API route untuk Gemini
+│       ├── translate.ts          # API endpoint terjemahan (SumoPod AI)
+│       └── leaderboard.ts        # API endpoint leaderboard (Supabase)
 ├── types/
-│   └── translation.ts           # Definisi tipe data
+│   └── translation.ts            # Type definitions
 ├── utils/
-│   └── generatePrompt.ts        # Generator prompt untuk AI
+│   ├── generatePrompt.ts         # AI prompt builder
+│   ├── gamification.ts           # XP, levels, achievements system
+│   ├── dailyChallenge.ts         # Tantangan harian logic
+│   ├── phrasebooks.ts            # Phrasebook CRUD
+│   ├── translationCache.ts       # Offline translation cache
+│   └── supabase.ts               # Supabase client
 └── styles/
-    └── global.css               # Global styles
+    └── global.css                # Global styles
 ```
 
-## Cara Penggunaan
+## Donation
 
-1. **Input Teks**: Masukkan teks dalam Bahasa Indonesia
-2. **Pilih Bahasa**: Pilih bahasa target (default: Bahasa Inggris)
-3. **Terjemahkan**: Klik tombol "Terjemahkan"
-4. **Lihat Hasil**: Dapatkan 6 versi terjemahan dengan gaya berbeda
-5. **Salin Teks**: Klik ikon copy untuk menyalin terjemahan
-6. **Lihat Riwayat**: Akses riwayat terjemahan di bagian bawah
+Dukung pengembangan Inglify: [Traktir Kopi ☕](https://trakteer.id/rakhaviantoni?quantity=1)
 
-## Build untuk Production
+## License
 
-```bash
-npm run build
-npm run preview
-```
+© 2025 Inglify by Rakha Viantoni

@@ -1,59 +1,35 @@
-import { TRANSLATION_TONES } from '../types/translation';
+import { TRANSLATION_TONES, SUPPORTED_LANGUAGES } from '../types/translation';
+import type { TranslationTone } from '../types/translation';
 
-export function generatePrompt(text: string, targetLanguage: string): string {
-  const languageMap: { [key: string]: string } = {
-    'en': 'English',
-    'ja': 'Japanese',
-    'ko': 'Korean', 
-    'zh': 'Chinese',
-    'fr': 'French',
-    'es': 'Spanish',
-    'de': 'German',
-    'ar': 'Arabic'
-  };
-
-  const targetLangName = languageMap[targetLanguage] || 'English';
+export function generatePrompt(text: string, targetLanguage: string, includePremium: boolean = true): string {
+  const targetLang = SUPPORTED_LANGUAGES.find(l => l.code === targetLanguage);
+  const targetLangName = targetLang?.name || 'English';
   
-  const toneDescriptions = TRANSLATION_TONES.map(tone => 
+  const tones: TranslationTone[] = includePremium 
+    ? TRANSLATION_TONES 
+    : TRANSLATION_TONES.filter(t => !t.premium);
+  
+  const toneDescriptions = tones.map(tone => 
     `${tone.name}: ${tone.description}`
   ).join('\n');
 
-  return `You are a professional translator. Please translate the following Indonesian text to ${targetLangName} in 6 different tones/styles.
+  const toneExamples = tones.map(tone => 
+    `    { "tone": "${tone.name}", "translation": "your ${tone.name} translation here" }`
+  ).join(',\n');
+
+  return `You are a professional translator. Translate the following Indonesian text to ${targetLangName} in ${tones.length} different tones/styles.
 
 Original Indonesian text: "${text}"
 
-Please provide translations in these 6 tones:
+Provide translations in these tones:
 ${toneDescriptions}
 
-IMPORTANT: Return your response as a valid JSON object with this exact structure:
+IMPORTANT: Return ONLY a valid JSON object (no markdown, no backticks, no explanation) with this exact structure:
 {
   "results": [
-    {
-      "tone": "formal",
-      "translation": "your formal translation here"
-    },
-    {
-      "tone": "casual", 
-      "translation": "your casual translation here"
-    },
-    {
-      "tone": "friendly",
-      "translation": "your friendly translation here"
-    },
-    {
-      "tone": "professional",
-      "translation": "your professional translation here"
-    },
-    {
-      "tone": "simple",
-      "translation": "your simple translation here"
-    },
-    {
-      "tone": "persuasive",
-      "translation": "your persuasive translation here"
-    }
+${toneExamples}
   ]
 }
 
-Make sure each translation accurately reflects the specified tone while maintaining the original meaning. Return only the JSON object, no additional text.`;
+Each translation must accurately reflect the specified tone while maintaining the original meaning.`;
 }

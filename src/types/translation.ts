@@ -2,6 +2,7 @@ export interface TranslationTone {
   name: string;
   label: string;
   description: string;
+  premium?: boolean;
 }
 
 export interface TranslationRequest {
@@ -28,6 +29,31 @@ export interface HistoryItem {
   targetLanguage: string;
   results: TranslationResult[];
   timestamp: number;
+}
+
+export interface Phrasebook {
+  id: string;
+  name: string;
+  icon: string;
+  items: HistoryItem[];
+  createdAt: number;
+}
+
+export interface DailyChallenge {
+  id: string;
+  date: string;
+  phrase: string;
+  targetLanguage: string;
+  completed: boolean;
+}
+
+export interface UserProfile {
+  id?: string;
+  email?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  isPremium: boolean;
+  createdAt?: string;
 }
 
 export const TRANSLATION_TONES: TranslationTone[] = [
@@ -60,8 +86,35 @@ export const TRANSLATION_TONES: TranslationTone[] = [
     name: 'persuasive',
     label: 'Persuasive',
     description: 'Gaya bahasa yang meyakinkan dan mempengaruhi'
+  },
+  {
+    name: 'slang',
+    label: 'Slang',
+    description: 'Gaya bahasa gaul / street language',
+    premium: true
+  },
+  {
+    name: 'poetic',
+    label: 'Poetic',
+    description: 'Gaya bahasa puitis dan indah',
+    premium: true
+  },
+  {
+    name: 'academic',
+    label: 'Academic',
+    description: 'Gaya bahasa akademis dan ilmiah',
+    premium: true
+  },
+  {
+    name: 'marketing',
+    label: 'Marketing',
+    description: 'Gaya bahasa pemasaran yang menarik',
+    premium: true
   }
 ];
+
+export const FREE_TONES = TRANSLATION_TONES.filter(t => !t.premium);
+export const PREMIUM_TONES = TRANSLATION_TONES.filter(t => t.premium);
 
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', name: 'English', label: 'Inggris' },

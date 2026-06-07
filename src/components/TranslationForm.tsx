@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SUPPORTED_LANGUAGES } from '../types/translation';
 import type { TranslationResponse } from '../types/translation';
+import { recordTranslation } from '../utils/gamification';
+import { getCachedTranslation, cacheTranslation } from '../utils/translationCache';
 
 interface SpeechRecognitionEvent {
   results: {
@@ -121,12 +123,20 @@ const TranslationForm: React.FC = () => {
       const { targetLanguage } = customEvent.detail;
       setTargetLanguage(targetLanguage);
     };
+
+    // Listen for set-language from daily challenge
+    const handleSetLanguage = (event: Event) => {
+      const customEvent = event as CustomEvent<{ targetLanguage: string }>;
+      setTargetLanguage(customEvent.detail.targetLanguage);
+    };
     
     window.addEventListener('header-language-changed', handleHeaderLanguageChange);
+    window.addEventListener('set-language', handleSetLanguage);
     
     return () => {
       document.addEventListener('keydown', handleKeyDown);
       window.removeEventListener('header-language-changed', handleHeaderLanguageChange);
+      window.removeEventListener('set-language', handleSetLanguage);
     };
   }, []);
 
@@ -151,20 +161,32 @@ const TranslationForm: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text, targetLanguage })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Terjadi kesalahan saat menerjemahkan');
+      // Check offline translation cache first
+      const cached = getCachedTranslation(text, targetLanguage);
+      let result: TranslationResponse;
+
+      if (cached) {
+        // Use cached result with fresh timestamp
+        result = { ...cached, timestamp: Date.now() };
+      } else {
+        const response = await fetch('/api/translate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text, targetLanguage })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Terjadi kesalahan saat menerjemahkan');
+        }
+        
+        result = await response.json();
+        
+        // Cache for offline use
+        cacheTranslation(text, targetLanguage, result);
       }
-      
-      const result: TranslationResponse = await response.json();
       
       // Save to localStorage
       const historyItem = {
@@ -187,12 +209,24 @@ const TranslationForm: React.FC = () => {
       window.dispatchEvent(new CustomEvent('translation-complete', {
         detail: result
       }));
+
+      // Gamification: record translation and fire event
+      const gamificationEvent = recordTranslation(targetLanguage);
+      window.dispatchEvent(new CustomEvent('gamification-update', {
+        detail: gamificationEvent
+      }));
       
       // Don't clear form to allow trying other phrases easily
       
     } catch (error) {
       console.error('Translation error:', error);
-      alert(error instanceof Error ? error.message : 'Terjadi kesalahan saat menerjemahkan');
+      const message = error instanceof Error ? error.message : 'Terjadi kesalahan saat menerjemahkan';
+      // Check if it's an offline error from service worker
+      if (message.includes('offline') || message.includes('Failed to fetch')) {
+        alert('Kamu sedang offline. Terjemahan membutuhkan koneksi internet.');
+      } else {
+        alert(message);
+      }
     } finally {
       setIsLoading(false);
     }

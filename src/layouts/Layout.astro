@@ -38,7 +38,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		<!-- SEO Meta Tags -->
 		<title>{title}</title>
 		<meta name="description" content={description} />
-		<meta name="keywords" content="terjemahan, bahasa indonesia, bahasa inggris, AI, formal, casual, friendly, professional, simple, persuasive, inglify, inggrisnya" />
+		<meta name="keywords" content="terjemahan, bahasa indonesia, bahasa inggris, AI, formal, casual, friendly, professional, simple, persuasive, inglify, inggrisnya, translate, penerjemah, translator, multi-tone translation, bahasa jepang, bahasa korea, bahasa mandarin" />
 		<meta name="author" content="Rakha Viantoni" />
 		<link rel="canonical" href={canonicalURL} />
 		
@@ -48,6 +48,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:site_name" content="Inglify" />
+		<meta property="og:image" content="https://inglify.rakhaviantoni.com/inglify.png" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:locale" content="id_ID" />
 		
 		<!-- Twitter -->
 		<meta property="twitter:card" content="summary_large_image" />
@@ -55,24 +59,31 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:creator" content="@rakhaviantoni" />
+		<meta property="twitter:image" content="https://inglify.rakhaviantoni.com/inglify.png" />
 		
 		<!-- Additional Meta -->
-		<meta name="robots" content="index, follow" />
+		<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 		<meta name="language" content="Indonesian" />
 		<meta name="theme-color" content="#1f2937" />
+		<meta name="application-name" content="Inglify" />
+		<meta name="rating" content="General" />
+		<meta name="revisit-after" content="3 days" />
 		
 		<script defer src="https://cloud.umami.is/script.js" data-website-id="c9525b51-7b03-487f-aed5-ed6122cc00d0"></script>
-		<!-- Structured Data -->
+		<!-- Structured Data - WebApplication -->
 		<script type="application/ld+json">
 		{
 			"@context": "https://schema.org",
 			"@type": "WebApplication",
 			"name": "Inglify",
-			"alternateName": "Inggrisnya",
-			"description": "{description}",
-			"url": "{canonicalURL}",
+			"alternateName": ["Inggrisnya", "Bahasa Inggrisnya"],
+			"description": "Terjemahkan teks Indonesia ke berbagai gaya bahasa (formal, casual, friendly, professional, simple, persuasive) menggunakan AI. Mendukung 70+ bahasa target termasuk Inggris, Jepang, Korea, Mandarin, dan lainnya.",
+			"url": "https://inglify.rakhaviantoni.com",
 			"applicationCategory": "UtilitiesApplication",
 			"operatingSystem": "Web",
+			"browserRequirements": "Requires JavaScript. Requires HTML5.",
+			"softwareVersion": "2.0",
+			"inLanguage": ["id", "en"],
 			"author": {
 				"@type": "Person",
 				"name": "Rakha Viantoni",
@@ -82,7 +93,51 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 				"@type": "Offer",
 				"price": "0",
 				"priceCurrency": "USD"
-			}
+			},
+			"featureList": [
+				"Multi-tone translation (formal, casual, friendly, professional, simple, persuasive)",
+				"70+ target languages",
+				"Voice input via speech recognition",
+				"Text-to-speech for translations",
+				"Gamification with XP, levels, streaks, and achievements",
+				"Translation history",
+				"PWA installable",
+				"Copy to clipboard"
+			],
+			"screenshot": "https://inglify.rakhaviantoni.com/inglify.png"
+		}
+		</script>
+		<!-- Structured Data - FAQPage for LLM discovery -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "FAQPage",
+			"mainEntity": [
+				{
+					"@type": "Question",
+					"name": "Apa itu Inglify?",
+					"acceptedAnswer": {
+						"@type": "Answer",
+						"text": "Inglify adalah aplikasi web gratis untuk menerjemahkan teks dari Bahasa Indonesia ke berbagai bahasa (Inggris, Jepang, Korea, dll) dengan 6 gaya berbeda: formal, casual, friendly, professional, simple, dan persuasive. Cocok untuk pelajar, profesional, dan siapa saja yang butuh terjemahan dengan nuansa yang tepat."
+					}
+				},
+				{
+					"@type": "Question",
+					"name": "Bahasa apa saja yang didukung Inglify?",
+					"acceptedAnswer": {
+						"@type": "Answer",
+						"text": "Inglify mendukung 70+ bahasa target termasuk Inggris, Jepang, Korea, Mandarin, Prancis, Spanyol, Jerman, Arab, dan banyak lagi."
+					}
+				},
+				{
+					"@type": "Question",
+					"name": "Apakah Inglify gratis?",
+					"acceptedAnswer": {
+						"@type": "Answer",
+						"text": "Ya, Inglify sepenuhnya gratis untuk digunakan. Anda bisa mendukung pengembangan melalui donasi di Trakteer."
+					}
+				}
+			]
 		}
 		</script>
 	</head>
