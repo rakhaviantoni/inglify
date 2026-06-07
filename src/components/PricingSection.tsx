@@ -66,7 +66,7 @@ const PricingSection: React.FC = () => {
       </div>
 
       {/* Support info */}
-      <div className="text-center pt-4 border-t border-gray-700 m-1">
+      <div className="text-center p-2 border-t border-gray-700 mt-1">
         <p className="text-xs text-gray-500">
           Ada pertanyaan? Hubungi{' '}
           <a href="https://instagram.com/rakhaviantoni" target="_blank" rel="noopener" className="text-blue-400 hover:text-blue-300">@rakhaviantoni</a>
