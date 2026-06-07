@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Check, X, Crown, Sparkle, ArrowsClockwise, BookOpen, Trophy, Lightning } from '@phosphor-icons/react';
+import { getDeviceId } from '../utils/auth';
 
 const PricingSection: React.FC = () => {
+  const [trakteerUrl, setTrakteerUrl] = useState('https://trakteer.id/rakhaviantoni?quantity=3');
+
+  useEffect(() => {
+    const deviceId = getDeviceId();
+    const msg = encodeURIComponent(`app:inglify device:${deviceId}`);
+    setTrakteerUrl(`https://trakteer.id/rakhaviantoni?quantity=3&message=${msg}`);
+  }, []);
   return (
     <div id="pricing-section" className="bg-gray-800 rounded-lg border border-gray-700 p-5 mt-6">
       <div className="text-center mb-5">
@@ -53,7 +61,7 @@ const PricingSection: React.FC = () => {
           </ul>
 
           <a
-            href="https://trakteer.id/rakhaviantoni?quantity=3"
+            href={trakteerUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
@@ -62,7 +70,7 @@ const PricingSection: React.FC = () => {
             Upgrade via Trakteer
           </a>
           <p className="text-[10px] text-gray-500 text-center mt-2">
-            3 unit kopi = Pro lifetime. Sertakan Device ID di pesan.
+            3 unit kopi = Pro lifetime
           </p>
         </div>
       </div>

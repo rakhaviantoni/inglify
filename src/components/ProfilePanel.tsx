@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getSupabaseClient } from '../utils/supabase';
-import { signInWithEmail, signOut, checkPremiumStatus, getDeviceId } from '../utils/auth';
+import { signInWithEmail, signOut, checkPremiumStatus, linkDeviceToUser } from '../utils/auth';
 import { mergeCloudHistory } from '../utils/cloudSync';
 import { getStats } from '../utils/gamification';
-import { User, SignOut, EnvelopeSimple, Crown, CloudArrowUp, CloudCheck, Spinner, Copy, Check } from '@phosphor-icons/react';
+import { User, SignOut, EnvelopeSimple, Crown, CloudArrowUp, CloudCheck, Spinner } from '@phosphor-icons/react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 const ProfilePanel: React.FC = () => {
@@ -15,12 +15,8 @@ const ProfilePanel: React.FC = () => {
   const [message, setMessage] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [synced, setSynced] = useState(false);
-  const [deviceId, setDeviceId] = useState('');
-  const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
-    setDeviceId(getDeviceId());
-
     // Check premium (device-based, no login needed)
     checkPremiumStatus().then(setIsPremium);
 
@@ -30,13 +26,20 @@ const ProfilePanel: React.FC = () => {
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) {
         setUser(data.user);
+        // Link device + check premium with userId
+        linkDeviceToUser(data.user.id);
+        checkPremiumStatus(data.user.id).then(setIsPremium);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const u = session?.user || null;
       setUser(u);
-      if (u) mergeCloudHistory(u.id);
+      if (u) {
+        linkDeviceToUser(u.id);
+        checkPremiumStatus(u.id).then(setIsPremium);
+        mergeCloudHistory(u.id);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -72,12 +75,6 @@ const ProfilePanel: React.FC = () => {
     setSyncing(false);
     setSynced(true);
     setTimeout(() => setSynced(false), 2000);
-  };
-
-  const copyDeviceId = async () => {
-    await navigator.clipboard.writeText(`app:inglify device:${deviceId}`);
-    setCopiedId(true);
-    setTimeout(() => setCopiedId(false), 2000);
   };
 
   const [level, setLevel] = useState(1);
@@ -140,19 +137,6 @@ const ProfilePanel: React.FC = () => {
                 {message}
               </p>
             )}
-
-            {/* Device ID for Trakteer payment */}
-            <div className="pt-2 border-t border-gray-700">
-              <p className="text-[10px] text-gray-500 mb-1">Device ID (sertakan di pesan Trakteer untuk aktifkan Pro):</p>
-              <div className="flex items-center gap-2">
-                <code className="text-[10px] text-gray-400 bg-gray-700 px-2 py-1 rounded font-mono truncate flex-1">
-                  app:inglify device:{deviceId}
-                </code>
-                <button onClick={copyDeviceId} className="p-1 text-gray-500 hover:text-blue-400 shrink-0">
-                  {copiedId ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                </button>
-              </div>
-            </div>
           </div>
         )}
       </div>
@@ -203,20 +187,7 @@ const ProfilePanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Device ID */}
-      {!isPremium && (
-        <div className="mt-3 pt-3 border-t border-gray-700">
-          <p className="text-[10px] text-gray-500 mb-1">Upgrade Pro — sertakan di pesan Trakteer:</p>
-          <div className="flex items-center gap-2">
-            <code className="text-[10px] text-gray-400 bg-gray-700 px-2 py-1 rounded font-mono truncate flex-1">
-              app:inglify device:{deviceId}
-            </code>
-            <button onClick={copyDeviceId} className="p-1 text-gray-500 hover:text-blue-400 shrink-0">
-              {copiedId ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* No device ID shown - handled automatically via Trakteer link */}
     </div>
   );
 };
