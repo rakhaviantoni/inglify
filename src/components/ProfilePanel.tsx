@@ -80,7 +80,10 @@ const ProfilePanel: React.FC = () => {
     setTimeout(() => setCopiedId(false), 2000);
   };
 
-  const stats = getStats();
+  const [level, setLevel] = useState(1);
+  useEffect(() => {
+    setLevel(getStats().level);
+  }, [isPremium]);
 
   // Not logged in
   if (!user) {
@@ -172,7 +175,7 @@ const ProfilePanel: React.FC = () => {
               {isPremium && <Crown size={12} weight="fill" className="text-orange-400" />}
             </div>
             <span className="text-[10px] text-gray-500">
-              {isPremium ? 'Pro' : 'Free'} · Lv.{stats.level}
+              {isPremium ? 'Pro' : 'Free'} · Lv.{level}
             </span>
           </div>
         </div>
