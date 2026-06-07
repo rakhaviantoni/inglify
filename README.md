@@ -93,4 +93,4 @@ Dukung pengembangan Inglify: [Traktir Kopi ☕](https://trakteer.id/rakhavianton
 
 ## License
 
-© 2025 Inglify by Rakha Viantoni
+© 2026 Inglify by Rakha Viantoni

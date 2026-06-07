@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Book, CaretDown } from '@phosphor-icons/react';
 
 interface WordEntry {
   id: string;
@@ -54,14 +55,12 @@ const WordOfTheDay: React.FC = () => {
         className="w-full flex items-center justify-between"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg">📖</span>
+          <Book size={18} weight="duotone" className="text-purple-400" />
           <span className="text-sm font-semibold text-gray-200">Word of the Day</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-orange-400">{word.word}</span>
-          <svg className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+          <CaretDown size={14} className={`text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
         </div>
       </button>
 

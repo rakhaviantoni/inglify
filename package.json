@@ -12,6 +12,7 @@
     "@astrojs/netlify": "^6.5.2",
     "@astrojs/node": "^9.3.0",
     "@astrojs/react": "^4.3.0",
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
     "@tailwindcss/vite": "^4.1.11",

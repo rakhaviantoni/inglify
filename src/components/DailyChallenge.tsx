@@ -3,6 +3,7 @@ import { getTodayChallenge, completeChallenge } from '../utils/dailyChallenge';
 import { getStats, saveStats, getLevelFromXP } from '../utils/gamification';
 import { SUPPORTED_LANGUAGES } from '../types/translation';
 import type { DailyChallenge as DailyChallengeType } from '../utils/dailyChallenge';
+import { Target, CheckCircle, CaretDown, Lightning } from '@phosphor-icons/react';
 
 const DailyChallenge: React.FC = () => {
   const [challenge, setChallenge] = useState<DailyChallengeType | null>(null);
@@ -11,18 +12,15 @@ const DailyChallenge: React.FC = () => {
   useEffect(() => {
     setChallenge(getTodayChallenge());
 
-    // Listen for challenge completion
     const handleTranslationComplete = (event: Event) => {
       const customEvent = event as CustomEvent;
       const { originalText } = customEvent.detail;
       const currentChallenge = getTodayChallenge();
-      
-      if (!currentChallenge.completed && 
+
+      if (!currentChallenge.completed &&
           originalText.toLowerCase().trim() === currentChallenge.phrase.toLowerCase().trim()) {
-        // Challenge completed!
         const xpReward = completeChallenge();
         if (xpReward > 0) {
-          // Add bonus XP
           const stats = getStats();
           stats.xp += xpReward;
           stats.level = getLevelFromXP(stats.xp);
@@ -31,7 +29,7 @@ const DailyChallenge: React.FC = () => {
           window.dispatchEvent(new CustomEvent('gamification-update', {
             detail: { xpGained: xpReward, newAchievements: [], streakUpdated: false, levelUp: false }
           }));
-          
+
           setChallenge({ ...currentChallenge, completed: true });
         }
       }
@@ -51,10 +49,8 @@ const DailyChallenge: React.FC = () => {
   };
 
   const handleTryChallenge = () => {
-    // Fill the translation form with the challenge phrase
     const inputElement = document.getElementById('input-text') as HTMLTextAreaElement;
     if (inputElement) {
-      // Set the value via native input event so React picks it up
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
         window.HTMLTextAreaElement.prototype, 'value'
       )?.set;
@@ -64,32 +60,32 @@ const DailyChallenge: React.FC = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Set the target language
     window.dispatchEvent(new CustomEvent('set-language', {
       detail: { targetLanguage: challenge.targetLanguage }
     }));
   };
 
   return (
-    <div className="bg-gradient-to-r from-gray-800 to-gray-800/80 rounded-lg p-3 mb-4 border border-orange-400/30">
+    <div className="bg-gray-800 rounded-lg p-3 mb-4 border border-orange-400/20">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg">{challenge.completed ? '✅' : '🎯'}</span>
+          {challenge.completed
+            ? <CheckCircle size={18} weight="duotone" className="text-green-400" />
+            : <Target size={18} weight="duotone" className="text-orange-400" />
+          }
           <span className="text-sm font-semibold text-gray-200">Tantangan Harian</span>
-          <span className={`text-xs px-1.5 py-0.5 rounded-full ${difficultyColors[challenge.difficulty]}`}>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${difficultyColors[challenge.difficulty]}`}>
             {challenge.difficulty}
           </span>
         </div>
         <div className="flex items-center gap-2">
           {!challenge.completed && (
-            <span className="text-xs text-orange-400">+{challenge.xpReward} XP</span>
+            <span className="text-xs text-orange-400 font-medium">+{challenge.xpReward} XP</span>
           )}
-          <svg className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+          <CaretDown size={14} className={`text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
         </div>
       </button>
 
@@ -97,24 +93,28 @@ const DailyChallenge: React.FC = () => {
         <div className="mt-3 pt-3 border-t border-gray-700">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1">
-              <p className="text-sm text-gray-300 mb-1">
-                Terjemahkan ke <span className="text-orange-400 font-medium">Bahasa {targetLang?.label || challenge.targetLanguage}</span>:
+              <p className="text-xs text-gray-400 mb-1.5">
+                Terjemahkan ke <span className="text-orange-400 font-medium">Bahasa {targetLang?.label}</span>:
               </p>
               <p className="text-base font-medium text-gray-100 mb-1">
                 "{challenge.phrase}"
               </p>
-              <p className="text-xs text-gray-500 italic">💡 {challenge.hint}</p>
+              <p className="text-[11px] text-gray-500 flex items-center gap-1">
+                <Lightning size={10} weight="fill" className="text-yellow-500" />
+                {challenge.hint}
+              </p>
             </div>
             {!challenge.completed ? (
               <button
                 onClick={handleTryChallenge}
                 className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded-md transition-colors shrink-0"
               >
-                Coba!
+                Coba
               </button>
             ) : (
-              <span className="text-xs text-green-400 font-medium shrink-0">
-                Selesai! 🎉
+              <span className="text-xs text-green-400 font-medium flex items-center gap-1 shrink-0">
+                <CheckCircle size={14} weight="fill" />
+                Selesai
               </span>
             )}
           </div>
