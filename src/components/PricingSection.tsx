@@ -49,7 +49,7 @@ const PricingSection: React.FC = () => {
             <FeatureRow included text="Global leaderboard" />
             <FeatureRow included text="Phrasebook unlimited" />
             <FeatureRow included text="Tanpa iklan (soon)" />
-            <FeatureRow included text="Priority support" />
+            <FeatureRow included text="Priority support via DM" />
           </ul>
 
           <a
@@ -63,6 +63,16 @@ const PricingSection: React.FC = () => {
           </a>
           <p className="text-[10px] text-gray-500 text-center mt-2">3 unit kopi = 1 bulan Pro</p>
         </div>
+      </div>
+
+      {/* Support info */}
+      <div className="text-center pt-4 border-t border-gray-700 mt-1">
+        <p className="text-xs text-gray-500">
+          Ada pertanyaan? Hubungi{' '}
+          <a href="https://instagram.com/rakhaviantoni" target="_blank" rel="noopener" className="text-blue-400 hover:text-blue-300">@rakhaviantoni</a>
+          {' '}atau email{' '}
+          <a href="mailto:halo@rakhaviantoni.com" className="text-blue-400 hover:text-blue-300">halo@rakhaviantoni.com</a>
+        </p>
       </div>
 
       {/* Feature highlights */}

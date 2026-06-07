@@ -25,7 +25,12 @@ const PHRASEBOOK_ICON_MAP: Record<string, React.ReactNode> = {
 };
 
 function PhrasebookIcon({ icon, size = 16 }: { icon: string; size?: number }) {
-  return <>{PHRASEBOOK_ICON_MAP[icon] || <Book size={size} weight="duotone" className="text-blue-400" />}</>;
+  // Handle legacy emoji icons from old localStorage data
+  if (PHRASEBOOK_ICON_MAP[icon]) {
+    return <>{PHRASEBOOK_ICON_MAP[icon]}</>;
+  }
+  // If it's a legacy emoji string, just show the default book icon
+  return <Book size={size} weight="duotone" className="text-blue-400" />;
 }
 
 const PhrasebookPanel: React.FC = () => {

@@ -10,6 +10,7 @@ const TranslationResult: React.FC = () => {
   const [currentSpeech, setCurrentSpeech] = useState<SpeechSynthesisUtterance | null>(null);
   const [copiedTone, setCopiedTone] = useState<string | null>(null);
   const [regeneratingTone, setRegeneratingTone] = useState<string | null>(null);
+  const [previewTones, setPreviewTones] = useState<Set<string>>(new Set());
   const [speakingTone, setSpeakingTone] = useState<string | null>(null);
   const [targetLang, setTargetLang] = useState<(typeof SUPPORTED_LANGUAGES)[0]>({ code: 'en', name: 'English', label: 'Inggris' });
   const [savedToPhrasebook, setSavedToPhrasebook] = useState(false);
@@ -128,10 +129,13 @@ const TranslationResult: React.FC = () => {
       setSavedToPhrasebook(false);
       
       const newTranslations: { [key: string]: string } = {};
+      const newPreviewTones = new Set<string>();
       results.forEach(result => {
         newTranslations[result.tone] = result.translation;
+        if (result.preview) newPreviewTones.add(result.tone);
       });
       setTranslations(newTranslations);
+      setPreviewTones(newPreviewTones);
       setIsVisible(true);
       
       const foundLang = SUPPORTED_LANGUAGES.find(lang => lang.code === targetLanguage);
@@ -232,7 +236,7 @@ const TranslationResult: React.FC = () => {
 
       {/* Premium tones section */}
       {PREMIUM_TONES.some(t => translations[t.name]) && (() => {
-        const hasFull = PREMIUM_TONES.some(t => translations[t.name] && !translations[t.name].endsWith('...'));
+        const isPreview = PREMIUM_TONES.some(t => previewTones.has(t.name));
         
         return (
           <div className="mb-4">
@@ -240,7 +244,7 @@ const TranslationResult: React.FC = () => {
               <Sparkle size={14} weight="duotone" className="text-orange-400" />
               <span className="text-sm font-medium text-gray-300">Pro Tones</span>
               <div className="flex-1 h-px bg-gray-700" />
-              {!hasFull && (
+              {isPreview && (
                 <a
                   href="#pricing"
                   onClick={(e) => {
@@ -254,7 +258,7 @@ const TranslationResult: React.FC = () => {
               )}
             </div>
 
-            {hasFull ? (
+            {!isPreview ? (
               /* Full pro cards for premium users */
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {PREMIUM_TONES.filter(t => translations[t.name]).map(tone => (
@@ -273,7 +277,7 @@ const TranslationResult: React.FC = () => {
                 ))}
               </div>
             ) : (
-              /* Preview cards for free users */
+              /* Blurred preview cards for free users */
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {PREMIUM_TONES.filter(t => translations[t.name]).map(tone => (
                   <div key={tone.name} className="bg-gray-800 rounded-lg p-4 border border-orange-400/10 relative overflow-hidden">
@@ -283,10 +287,10 @@ const TranslationResult: React.FC = () => {
                     </div>
                     <p className="text-[11px] text-gray-500 mb-2">{tone.description}</p>
                     <div className="p-3 rounded border bg-gray-700/50 border-gray-600/50 relative">
-                      <p className="text-gray-400 text-sm italic select-none">
+                      <p className="text-gray-400 text-sm italic select-none blur-[3px]">
                         {translations[tone.name]}
                       </p>
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-gray-800/95 rounded" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-800/30 to-gray-800/80 rounded" />
                     </div>
                   </div>
                 ))}
