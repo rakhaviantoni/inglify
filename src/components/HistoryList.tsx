@@ -8,7 +8,10 @@ const HistoryList: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const formatDate = (timestamp: number): string => {
-    const date = new Date(timestamp);
+    const ts = typeof timestamp === 'string' ? parseInt(timestamp, 10) : timestamp;
+    if (!ts || isNaN(ts)) return '';
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) return '';
     return date.toLocaleString('id-ID', {
       year: 'numeric',
       month: 'short',

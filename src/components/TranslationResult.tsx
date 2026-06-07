@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { TRANSLATION_TONES, SUPPORTED_LANGUAGES } from '../types/translation';
+import { TRANSLATION_TONES, SUPPORTED_LANGUAGES, FREE_TONES, PREMIUM_TONES } from '../types/translation';
 import type { TranslationResponse, HistoryItem } from '../types/translation';
+import { SpeakerHigh, Copy, Check, ArrowsClockwise, BookmarkSimple, Plus, Lock } from '@phosphor-icons/react';
 
 const TranslationResult: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -8,6 +9,7 @@ const TranslationResult: React.FC = () => {
   const [translations, setTranslations] = useState<{ [key: string]: string }>({});
   const [currentSpeech, setCurrentSpeech] = useState<SpeechSynthesisUtterance | null>(null);
   const [copiedTone, setCopiedTone] = useState<string | null>(null);
+  const [regeneratingTone, setRegeneratingTone] = useState<string | null>(null);
   const [speakingTone, setSpeakingTone] = useState<string | null>(null);
   const [targetLang, setTargetLang] = useState<(typeof SUPPORTED_LANGUAGES)[0]>({ code: 'en', name: 'English', label: 'Inggris' });
   const [savedToPhrasebook, setSavedToPhrasebook] = useState(false);
@@ -72,6 +74,33 @@ const TranslationResult: React.FC = () => {
     } catch (err) {
       console.error('Failed to copy text:', err);
       alert('Gagal menyalin teks');
+    }
+  };
+
+  const regenerateTone = async (tone: string) => {
+    if (regeneratingTone) return;
+    setRegeneratingTone(tone);
+
+    try {
+      const res = await fetch('/api/regenerate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: originalText,
+          targetLanguage: targetLang.code,
+          tone,
+          currentTranslation: translations[tone] || '',
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed');
+
+      const data = await res.json();
+      setTranslations(prev => ({ ...prev, [tone]: data.translation }));
+    } catch {
+      alert('Gagal regenerate. Coba lagi.');
+    } finally {
+      setRegeneratingTone(null);
     }
   };
 
@@ -147,9 +176,6 @@ const TranslationResult: React.FC = () => {
 
   if (!isVisible) return null;
 
-  const freeTones = TRANSLATION_TONES.filter(t => !t.premium);
-  const premiumTones = TRANSLATION_TONES.filter(t => t.premium);
-
   return (
     <div id="translation-results">
       <div className="bg-gray-800 rounded-lg p-4 mb-4 border border-gray-700">
@@ -160,28 +186,15 @@ const TranslationResult: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleSaveToPhrasebook}
-              className={`px-3 py-1 text-xs rounded-md transition duration-200 flex items-center gap-1 ${
+              className={`px-3 py-1 text-xs rounded-md transition duration-200 flex items-center gap-1.5 ${
                 savedToPhrasebook
                   ? 'bg-green-600 text-white'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
               title="Simpan ke phrasebook"
             >
-              {savedToPhrasebook ? (
-                <>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Tersimpan
-                </>
-              ) : (
-                <>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  </svg>
-                  Simpan
-                </>
-              )}
+              {savedToPhrasebook ? <Check size={12} weight="bold" /> : <BookmarkSimple size={12} />}
+              {savedToPhrasebook ? 'Tersimpan' : 'Simpan'}
             </button>
             <button
               onClick={() => {
@@ -191,143 +204,148 @@ const TranslationResult: React.FC = () => {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
               }}
-              className="px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex items-center gap-1"
-              title="Kembali ke form"
+              className="px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition duration-200 flex items-center gap-1.5"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Coba frasa lain
+              <Plus size={12} weight="bold" />
+              Coba lain
             </button>
           </div>
         </div>
       </div>
-      
+
       {/* Free tones */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-        {freeTones.map(tone => (
-          <div key={tone.name} className="bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-700">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-base font-semibold text-gray-200">{tone.label}</h4>
-              <div className="flex space-x-2">
-                <button 
-                  onClick={() => translations[tone.name] && speakText(translations[tone.name], tone.name)}
-                  className={`transition-colors ${speakingTone === tone.name ? 'text-orange-400' : 'text-gray-400 hover:text-orange-400'}`}
-                  title="Dengarkan"
-                  disabled={!translations[tone.name]}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 256 256">
-                    <path d="M80,168H32a8,8,0,0,1-8-8V96a8,8,0,0,1,8-8H80l72-56V224Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
-                    <path d="M192,106.85a32,32,0,0,1,0,42.3" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
-                    <path d="M221.67,80a72,72,0,0,1,0,96" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
-                  </svg>
-                </button>
-                <button 
-                  onClick={() => translations[tone.name] && copyText(translations[tone.name], tone.name)}
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                  title="Salin"
-                  disabled={!translations[tone.name]}
-                >
-                  {copiedTone === tone.name ? (
-                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-            <p className="text-xs text-gray-400 mb-3">{tone.description}</p>
-            <div className="bg-gray-700 p-3 rounded border border-gray-600">
-              <p className="text-gray-200 leading-relaxed text-sm">
-                {translations[tone.name] || ''}
-              </p>
-            </div>
-          </div>
+        {FREE_TONES.map(tone => (
+          <ToneCard
+            key={tone.name}
+            tone={tone}
+            translation={translations[tone.name] || ''}
+            copiedTone={copiedTone}
+            speakingTone={speakingTone}
+            regeneratingTone={regeneratingTone}
+            onSpeak={() => translations[tone.name] && speakText(translations[tone.name], tone.name)}
+            onCopy={() => translations[tone.name] && copyText(translations[tone.name], tone.name)}
+            onRegenerate={() => regenerateTone(tone.name)}
+          />
         ))}
       </div>
 
-      {/* Premium tones */}
-      {premiumTones.some(t => translations[t.name]) && (
+      {/* Premium tones — only show if results exist */}
+      {PREMIUM_TONES.some(t => translations[t.name]) && (
         <>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm font-semibold text-gray-300">✨ Premium Tones</span>
+            <span className="text-sm font-semibold text-gray-300">✨ Pro</span>
             <div className="flex-1 h-px bg-gray-700" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-            {premiumTones.map(tone => (
-              translations[tone.name] && (
-                <div key={tone.name} className="bg-gray-800 rounded-lg shadow-lg p-4 border border-orange-400/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-base font-semibold text-gray-200">{tone.label}</h4>
-                      <span className="text-xs px-1.5 py-0.5 bg-orange-400/10 text-orange-400 rounded-full">PRO</span>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => speakText(translations[tone.name], tone.name)}
-                        className={`transition-colors ${speakingTone === tone.name ? 'text-orange-400' : 'text-gray-400 hover:text-orange-400'}`}
-                        title="Dengarkan"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 256 256">
-                          <path d="M80,168H32a8,8,0,0,1-8-8V96a8,8,0,0,1,8-8H80l72-56V224Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
-                          <path d="M192,106.85a32,32,0,0,1,0,42.3" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
-                        </svg>
-                      </button>
-                      <button 
-                        onClick={() => copyText(translations[tone.name], tone.name)}
-                        className="text-gray-400 hover:text-blue-400 transition-colors"
-                        title="Salin"
-                      >
-                        {copiedTone === tone.name ? (
-                          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                          </svg>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-400 mb-3">{tone.description}</p>
-                  <div className="bg-gray-700 p-3 rounded border border-orange-400/20">
-                    <p className="text-gray-200 leading-relaxed text-sm">
-                      {translations[tone.name]}
-                    </p>
-                  </div>
-                </div>
-              )
+            {PREMIUM_TONES.filter(t => translations[t.name]).map(tone => (
+              <ToneCard
+                key={tone.name}
+                tone={tone}
+                translation={translations[tone.name]}
+                copiedTone={copiedTone}
+                speakingTone={speakingTone}
+                regeneratingTone={regeneratingTone}
+                onSpeak={() => speakText(translations[tone.name], tone.name)}
+                onCopy={() => copyText(translations[tone.name], tone.name)}
+                onRegenerate={() => regenerateTone(tone.name)}
+                isPremium
+              />
             ))}
           </div>
         </>
       )}
 
-      {/* Locked premium tones teaser */}
-      {premiumTones.some(t => !translations[t.name]) && (
-        <div className="bg-gradient-to-r from-gray-800 to-gray-800/50 rounded-lg p-4 mb-4 border border-gray-700/50">
+      {/* Premium teaser — only show if user doesn't have premium results */}
+      {!PREMIUM_TONES.some(t => translations[t.name]) && (
+        <div className="bg-gray-800/60 rounded-lg p-4 mb-4 border border-gray-700/50">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">🔒</span>
-            <span className="text-sm font-medium text-gray-300">Gaya tambahan</span>
+            <Lock size={16} weight="duotone" className="text-gray-500" />
+            <span className="text-sm font-medium text-gray-400">Gaya tambahan</span>
           </div>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {premiumTones.filter(t => !translations[t.name]).map(tone => (
-              <span key={tone.name} className="text-xs px-2 py-1 bg-gray-700 rounded text-gray-400">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {PREMIUM_TONES.map(tone => (
+              <span key={tone.name} className="text-xs px-2 py-1 bg-gray-700/60 rounded text-gray-500">
                 {tone.label}
               </span>
             ))}
           </div>
-          <p className="text-xs text-gray-500">
-            Dukung via Trakteer untuk buka gaya terjemahan slang, puitis, akademis, dan marketing.
+          <p className="text-xs text-gray-600">
+            Dukung via <a href="https://trakteer.id/rakhaviantoni?quantity=1" target="_blank" rel="noopener" className="text-orange-400/70 hover:text-orange-400">Trakteer</a> untuk buka slang, puitis, akademis, & marketing.
           </p>
         </div>
       )}
     </div>
   );
 };
+
+// Tone card sub-component
+interface ToneCardProps {
+  tone: { name: string; label: string; description: string };
+  translation: string;
+  copiedTone: string | null;
+  speakingTone: string | null;
+  regeneratingTone: string | null;
+  onSpeak: () => void;
+  onCopy: () => void;
+  onRegenerate: () => void;
+  isPremium?: boolean;
+}
+
+function ToneCard({ tone, translation, copiedTone, speakingTone, regeneratingTone, onSpeak, onCopy, onRegenerate, isPremium }: ToneCardProps) {
+  return (
+    <div className={`bg-gray-800 rounded-lg p-4 border ${isPremium ? 'border-orange-400/20' : 'border-gray-700'}`}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-gray-200">{tone.label}</h4>
+          {isPremium && (
+            <span className="text-[10px] px-1.5 py-0.5 bg-orange-400/10 text-orange-400 rounded-full font-medium">PRO</span>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={onRegenerate}
+            disabled={!translation || regeneratingTone === tone.name}
+            className={`p-1.5 rounded transition-colors ${
+              regeneratingTone === tone.name
+                ? 'text-blue-400 animate-spin'
+                : 'text-gray-500 hover:text-blue-400'
+            }`}
+            title="Coba versi lain"
+          >
+            <ArrowsClockwise size={14} />
+          </button>
+          <button
+            onClick={onSpeak}
+            disabled={!translation}
+            className={`p-1.5 rounded transition-colors ${
+              speakingTone === tone.name ? 'text-orange-400' : 'text-gray-500 hover:text-orange-400'
+            }`}
+            title="Dengarkan"
+          >
+            <SpeakerHigh size={14} />
+          </button>
+          <button
+            onClick={onCopy}
+            disabled={!translation}
+            className="p-1.5 rounded text-gray-500 hover:text-blue-400 transition-colors"
+            title="Salin"
+          >
+            {copiedTone === tone.name
+              ? <Check size={14} className="text-green-400" weight="bold" />
+              : <Copy size={14} />
+            }
+          </button>
+        </div>
+      </div>
+      <p className="text-[11px] text-gray-500 mb-2">{tone.description}</p>
+      <div className={`p-3 rounded border ${isPremium ? 'bg-gray-700/70 border-orange-400/10' : 'bg-gray-700 border-gray-600'}`}>
+        <p className="text-gray-200 leading-relaxed text-sm">
+          {translation || ''}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default TranslationResult;

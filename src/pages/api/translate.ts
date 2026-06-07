@@ -11,7 +11,7 @@ const MODELS = [
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { text, targetLanguage, premium = true } = await request.json();
+    const { text, targetLanguage, premium = false } = await request.json();
 
     if (!text || !targetLanguage) {
       return new Response(
