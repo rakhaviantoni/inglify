@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TRANSLATION_TONES, SUPPORTED_LANGUAGES, FREE_TONES, PREMIUM_TONES } from '../types/translation';
 import type { TranslationResponse, HistoryItem } from '../types/translation';
-import { SpeakerHigh, Copy, Check, ArrowsClockwise, BookmarkSimple, Plus, Lock } from '@phosphor-icons/react';
+import { SpeakerHigh, Copy, Check, ArrowsClockwise, BookmarkSimple, Plus, Lock, Sparkle } from '@phosphor-icons/react';
 
 const TranslationResult: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -234,7 +234,8 @@ const TranslationResult: React.FC = () => {
       {PREMIUM_TONES.some(t => translations[t.name]) && (
         <>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm font-semibold text-gray-300">✨ Pro</span>
+            <Sparkle size={14} weight="duotone" className="text-orange-400" />
+            <span className="text-sm font-semibold text-gray-300">Pro</span>
             <div className="flex-1 h-px bg-gray-700" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
@@ -256,7 +257,48 @@ const TranslationResult: React.FC = () => {
         </>
       )}
 
-      {/* Premium teaser — only show if user doesn't have premium results */}
+      {/* Premium teaser — show truncated previews to entice upgrade */}
+      {!PREMIUM_TONES.some(t => translations[t.name] && !translations[t.name].endsWith('...')) && 
+       PREMIUM_TONES.some(t => translations[t.name]) && (
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkle size={14} weight="duotone" className="text-orange-400" />
+            <span className="text-sm font-medium text-gray-300">Pro Tones</span>
+            <div className="flex-1 h-px bg-gray-700" />
+            <a
+              href="#pricing"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById('pricing-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-[11px] text-orange-400 hover:text-orange-300 font-medium"
+            >
+              Buka semua
+            </a>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {PREMIUM_TONES.filter(t => translations[t.name]).map(tone => (
+              <div key={tone.name} className="bg-gray-800 rounded-lg p-4 border border-orange-400/10 relative overflow-hidden">
+                <div className="flex items-center gap-2 mb-2">
+                  <h4 className="text-sm font-semibold text-gray-300">{tone.label}</h4>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-orange-400/10 text-orange-400 rounded-full font-medium">PRO</span>
+                </div>
+                <p className="text-[11px] text-gray-500 mb-2">{tone.description}</p>
+                <div className="p-3 rounded border bg-gray-700/50 border-gray-600/50 relative">
+                  <p className="text-gray-400 text-sm italic select-none">
+                    {translations[tone.name]}
+                  </p>
+                  {/* Blur overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-gray-800/90 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Premium teaser — no previews available */}
       {!PREMIUM_TONES.some(t => translations[t.name]) && (
         <div className="bg-gray-800/60 rounded-lg p-4 mb-4 border border-gray-700/50">
           <div className="flex items-center gap-2 mb-2">

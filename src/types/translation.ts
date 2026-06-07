@@ -14,6 +14,7 @@ export interface TranslationRequest {
 export interface TranslationResult {
   tone: string;
   translation: string;
+  preview?: boolean;
 }
 
 export interface TranslationResponse {

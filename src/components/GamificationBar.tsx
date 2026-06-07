@@ -8,7 +8,19 @@ import {
   type UserStats,
   type GamificationEvent,
 } from '../utils/gamification';
-import { Star, Fire, Medal, X } from '@phosphor-icons/react';
+import { Star, Fire, Medal, X, Plant, PencilLine, Trophy, Crown, GlobeHemisphereWest, Globe, Lightning, Diamond, Lock, Sparkle } from '@phosphor-icons/react';
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  'plant': <Plant size={18} weight="duotone" className="text-green-400" />,
+  'pencil-line': <PencilLine size={18} weight="duotone" className="text-blue-400" />,
+  'trophy': <Trophy size={18} weight="duotone" className="text-yellow-400" />,
+  'crown': <Crown size={18} weight="duotone" className="text-yellow-300" />,
+  'globe-hemisphere-west': <GlobeHemisphereWest size={18} weight="duotone" className="text-cyan-400" />,
+  'globe': <Globe size={18} weight="duotone" className="text-cyan-300" />,
+  'fire': <Fire size={18} weight="duotone" className="text-red-400" />,
+  'lightning': <Lightning size={18} weight="duotone" className="text-yellow-400" />,
+  'diamond': <Diamond size={18} weight="duotone" className="text-purple-400" />,
+};
 
 const GamificationBar: React.FC = () => {
   const [stats, setStats] = useState<UserStats>({
@@ -34,10 +46,10 @@ const GamificationBar: React.FC = () => {
         setToast({ message: `${achievement.name}!`, icon: achievement.icon });
         setTimeout(() => setToast(null), 3000);
       } else if (levelUp) {
-        setToast({ message: `Level Up!`, icon: '⬆️' });
+        setToast({ message: `Level Up!`, icon: 'star' });
         setTimeout(() => setToast(null), 3000);
       } else if (xpGained > 0) {
-        setToast({ message: `+${xpGained} XP`, icon: '✨' });
+        setToast({ message: `+${xpGained} XP`, icon: 'sparkle' });
         setTimeout(() => setToast(null), 2000);
       }
     };
@@ -133,7 +145,7 @@ const GamificationBar: React.FC = () => {
                 key={a.id}
                 className="flex items-center gap-2.5 p-2.5 rounded-lg bg-gray-700/70 border border-gray-600/50"
               >
-                <span className="text-lg">{a.icon}</span>
+                {ICON_MAP[a.icon] || <Star size={18} weight="duotone" className="text-orange-400" />}
                 <div>
                   <p className="text-xs font-medium text-gray-200">{a.name}</p>
                   <p className="text-[10px] text-gray-400">{a.description}</p>
@@ -145,7 +157,7 @@ const GamificationBar: React.FC = () => {
                 key={a.id}
                 className="flex items-center gap-2.5 p-2.5 rounded-lg bg-gray-700/30 border border-gray-700/50 opacity-50"
               >
-                <span className="text-lg grayscale">🔒</span>
+                <Lock size={18} weight="regular" className="text-gray-500" />
                 <div>
                   <p className="text-xs font-medium text-gray-400">{a.name}</p>
                   <p className="text-[10px] text-gray-500">{a.description}</p>
@@ -160,7 +172,7 @@ const GamificationBar: React.FC = () => {
       {toast && (
         <div className="fixed top-4 right-4 z-50 animate-bounce">
           <div className="bg-gray-800 border border-orange-400/40 rounded-lg px-4 py-2 shadow-xl flex items-center gap-2">
-            <span className="text-lg">{toast.icon}</span>
+            {ICON_MAP[toast.icon] || <Sparkle size={18} weight="duotone" className="text-yellow-400" />}
             <span className="text-sm font-medium text-gray-200">{toast.message}</span>
           </div>
         </div>

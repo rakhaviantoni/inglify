@@ -9,6 +9,7 @@ import DailyChallenge from '../components/DailyChallenge.tsx';
 import WordOfTheDay from '../components/WordOfTheDay.tsx';
 import PhrasebookPanel from '../components/PhrasebookPanel.tsx';
 import Leaderboard from '../components/Leaderboard.tsx';
+import PricingSection from '../components/PricingSection.tsx';
 ---
 
 <Layout title="Bahasa Inggrisnya... - Inglify" description="Terjemahkan teks Bahasa Indonesia ke 70+ bahasa dengan berbagai gaya dan nada menggunakan AI. Gratis, cepat, dan akurat.">
@@ -44,6 +45,9 @@ import Leaderboard from '../components/Leaderboard.tsx';
 
 			<!-- Leaderboard -->
 			<Leaderboard client:load />
+
+			<!-- Pricing -->
+			<PricingSection client:load />
 
 			<!-- Footer -->
 			<footer class="text-center mt-12 pt-8 border-t border-gray-700">

@@ -1,13 +1,21 @@
 import type { APIRoute } from 'astro';
 import OpenAI from 'openai';
 import { generatePrompt } from '../../utils/generatePrompt';
+import { PREMIUM_TONES } from '../../types/translation';
 
-// Ordered by preference - falls through if one fails
 const MODELS = [
   'kimi-k2.6',
   'MiniMax-M2.7-highspeed',
   'gpt-5-nano',
 ];
+
+const PREMIUM_TONE_NAMES = PREMIUM_TONES.map(t => t.name);
+
+function truncatePreview(text: string): string {
+  const words = text.split(' ');
+  if (words.length <= 4) return words.slice(0, 2).join(' ') + '...';
+  return words.slice(0, 4).join(' ') + '...';
+}
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -33,11 +41,10 @@ export const POST: APIRoute = async ({ request }) => {
       baseURL: 'https://ai.sumopod.com/v1',
     });
 
-    const prompt = generatePrompt(text, targetLanguage, premium);
+    // Always generate all tones (including premium) for preview
+    const prompt = generatePrompt(text, targetLanguage, true);
     let generatedText: string | null = null;
-    let lastError: unknown = null;
 
-    // Try each model in order
     for (const model of MODELS) {
       try {
         const response = await openai.chat.completions.create({
@@ -56,24 +63,20 @@ export const POST: APIRoute = async ({ request }) => {
         generatedText = response.choices[0]?.message?.content || null;
         if (generatedText) break;
       } catch (err) {
-        lastError = err;
-        console.warn(`Model ${model} failed, trying next...`, err instanceof Error ? err.message : err);
+        console.warn(`Model ${model} failed:`, err instanceof Error ? err.message : '');
         continue;
       }
     }
 
     if (!generatedText) {
-      console.error('All models failed. Last error:', lastError);
       return new Response(
         JSON.stringify({ error: 'Semua model AI sedang tidak tersedia. Coba lagi nanti.' }),
         { status: 503, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // Parse the JSON response
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error('No JSON in response:', generatedText.slice(0, 200));
       return new Response(
         JSON.stringify({ error: 'Gagal parse hasil terjemahan' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
@@ -81,6 +84,16 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const translationResult = JSON.parse(jsonMatch[0]);
+
+    // For free users: truncate premium tones to preview only
+    if (!premium && translationResult.results) {
+      translationResult.results = translationResult.results.map((r: { tone: string; translation: string }) => {
+        if (PREMIUM_TONE_NAMES.includes(r.tone)) {
+          return { ...r, translation: truncatePreview(r.translation), preview: true };
+        }
+        return r;
+      });
+    }
 
     return new Response(
       JSON.stringify({

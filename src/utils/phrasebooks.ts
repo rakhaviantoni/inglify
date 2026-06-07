@@ -65,4 +65,4 @@ export function renamePhrasebook(bookId: string, name: string): void {
   }
 }
 
-export const DEFAULT_ICONS = ['📚', '✈️', '💼', '🍽️', '🎓', '💬', '❤️', '🏠', '🎯', '🌍'];
+export const DEFAULT_ICONS = ['book', 'airplane', 'briefcase', 'fork-knife', 'graduation-cap', 'chat-circle', 'heart', 'house', 'target', 'globe'];

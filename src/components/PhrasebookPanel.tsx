@@ -9,7 +9,24 @@ import {
 } from '../utils/phrasebooks';
 import { SUPPORTED_LANGUAGES } from '../types/translation';
 import type { Phrasebook, HistoryItem } from '../types/translation';
-import { BookOpen, Plus, ArrowLeft, X, CaretDown } from '@phosphor-icons/react';
+import { BookOpen, Plus, ArrowLeft, X, CaretDown, Book, AirplaneTilt, Briefcase, ForkKnife, GraduationCap, ChatCircle, Heart, House, Target, Globe } from '@phosphor-icons/react';
+
+const PHRASEBOOK_ICON_MAP: Record<string, React.ReactNode> = {
+  'book': <Book size={16} weight="duotone" className="text-blue-400" />,
+  'airplane': <AirplaneTilt size={16} weight="duotone" className="text-cyan-400" />,
+  'briefcase': <Briefcase size={16} weight="duotone" className="text-gray-300" />,
+  'fork-knife': <ForkKnife size={16} weight="duotone" className="text-orange-400" />,
+  'graduation-cap': <GraduationCap size={16} weight="duotone" className="text-purple-400" />,
+  'chat-circle': <ChatCircle size={16} weight="duotone" className="text-green-400" />,
+  'heart': <Heart size={16} weight="duotone" className="text-red-400" />,
+  'house': <House size={16} weight="duotone" className="text-yellow-400" />,
+  'target': <Target size={16} weight="duotone" className="text-orange-400" />,
+  'globe': <Globe size={16} weight="duotone" className="text-cyan-300" />,
+};
+
+function PhrasebookIcon({ icon, size = 16 }: { icon: string; size?: number }) {
+  return <>{PHRASEBOOK_ICON_MAP[icon] || <Book size={size} weight="duotone" className="text-blue-400" />}</>;
+}
 
 const PhrasebookPanel: React.FC = () => {
   const [phrasebooks, setPhrasebooks] = useState<Phrasebook[]>([]);
@@ -17,7 +34,7 @@ const PhrasebookPanel: React.FC = () => {
   const [activeBook, setActiveBook] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newIcon, setNewIcon] = useState('📚');
+  const [newIcon, setNewIcon] = useState('book');
   const [showSaveMenu, setShowSaveMenu] = useState(false);
   const [itemToSave, setItemToSave] = useState<HistoryItem | null>(null);
 
@@ -112,9 +129,9 @@ const PhrasebookPanel: React.FC = () => {
                   <button
                     key={book.id}
                     onClick={() => handleSaveItem(book.id)}
-                    className="px-2.5 py-1 text-xs bg-gray-600 hover:bg-gray-500 rounded-md text-gray-200 transition-colors"
+                    className="px-2.5 py-1 text-xs bg-gray-600 hover:bg-gray-500 rounded-md text-gray-200 transition-colors flex items-center gap-1.5"
                   >
-                    {book.icon} {book.name}
+                    <PhrasebookIcon icon={book.icon} /> {book.name}
                   </button>
                 ))}
               </div>
@@ -138,7 +155,7 @@ const PhrasebookPanel: React.FC = () => {
                         onClick={() => setActiveBook(book.id)}
                         className="flex items-center gap-2.5 flex-1 text-left"
                       >
-                        <span className="text-base">{book.icon}</span>
+                        <PhrasebookIcon icon={book.icon} />
                         <span className="text-sm text-gray-200">{book.name}</span>
                         <span className="text-[10px] text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded-full">{book.items.length}</span>
                       </button>
@@ -168,9 +185,9 @@ const PhrasebookPanel: React.FC = () => {
                       <button
                         key={icon}
                         onClick={() => setNewIcon(icon)}
-                        className={`text-base p-1 rounded ${newIcon === icon ? 'bg-gray-600 ring-1 ring-blue-500' : 'hover:bg-gray-600'}`}
+                        className={`p-1.5 rounded ${newIcon === icon ? 'bg-gray-600 ring-1 ring-blue-500' : 'hover:bg-gray-600'}`}
                       >
-                        {icon}
+                        <PhrasebookIcon icon={icon} />
                       </button>
                     ))}
                   </div>
@@ -210,7 +227,7 @@ const PhrasebookPanel: React.FC = () => {
               </button>
 
               <h4 className="text-sm font-medium text-gray-200 mb-3 flex items-center gap-2">
-                <span className="text-base">{activePhrasebook?.icon}</span>
+                <PhrasebookIcon icon={activePhrasebook?.icon || 'book'} />
                 {activePhrasebook?.name}
               </h4>
 
