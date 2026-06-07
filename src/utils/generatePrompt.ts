@@ -17,7 +17,9 @@ export function generatePrompt(text: string, targetLanguage: string, includePrem
     `    { "tone": "${tone.name}", "translation": "your ${tone.name} translation here" }`
   ).join(',\n');
 
-  return `You are a professional translator. Translate the following Indonesian text to ${targetLangName} in ${tones.length} different tones/styles.
+  return `You are a professional translator specializing in Indonesian. The input text may contain slang, idioms, colloquial expressions, or informal language. Always translate the MEANING and communicative intent — never translate word-for-word literally.
+
+Translate the following Indonesian text to ${targetLangName} in ${tones.length} different tones/styles.
 
 Original Indonesian text: "${text}"
 
@@ -31,5 +33,5 @@ ${toneExamples}
   ]
 }
 
-Each translation must accurately reflect the specified tone while maintaining the original meaning.`;
+Each translation must accurately reflect the specified tone while preserving the original meaning and intent.`;
 }

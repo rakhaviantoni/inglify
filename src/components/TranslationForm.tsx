@@ -59,10 +59,11 @@ const TranslationForm: React.FC = () => {
       // Ctrl/Cmd + Enter to submit
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
-        if (text.trim() && !isLoading) {
+        const textarea = document.getElementById('input-text') as HTMLTextAreaElement;
+        if (textarea?.value.trim()) {
           const form = document.getElementById('translation-form') as HTMLFormElement;
           if (form) {
-            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            form.requestSubmit();
           }
         }
       }

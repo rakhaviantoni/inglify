@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request }) => {
           messages: [
             {
               role: 'system',
-              content: 'You are a professional translator. Respond with valid JSON only. No markdown, no backticks, no extra text.',
+              content: `You are an expert Indonesian-to-${targetLanguage === 'en' ? 'English' : 'other languages'} translator. You understand Indonesian slang, idioms, expressions, and colloquialisms deeply. Always translate the MEANING and intent, never word-for-word. For example "astaga naga" means "holy moly/oh my god" (expression of shock), NOT something about dragons. Respond with valid JSON only. No markdown, no backticks.`,
             },
             { role: 'user', content: prompt },
           ],
