@@ -124,7 +124,9 @@ function getToday(): string {
 }
 
 function isYesterday(dateStr: string): boolean {
+  if (!dateStr) return false;
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return false;
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   return date.toISOString().split('T')[0] === yesterday.toISOString().split('T')[0];
