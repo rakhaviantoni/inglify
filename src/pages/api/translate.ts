@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import OpenAI from 'openai';
 import { generatePrompt } from '../../utils/generatePrompt';
 
-// Ordered by preference — falls through if one fails
+// Ordered by preference - falls through if one fails
 const MODELS = [
   'kimi-k2.6',
   'MiniMax-M2.7-highspeed',

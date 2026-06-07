@@ -29,7 +29,7 @@ const Leaderboard: React.FC = () => {
       const data = await res.json();
       setLeaderboard(data.leaderboard || []);
     } catch {
-      // Offline or not configured — show empty
+      // Offline or not configured - show empty
       setLeaderboard([]);
     }
     setLoading(false);

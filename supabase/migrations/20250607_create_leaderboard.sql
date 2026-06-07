@@ -1,4 +1,4 @@
--- Inglify tables — shared Supabase instance with bayipintar and others
+-- Inglify tables - shared Supabase instance with bayipintar and others
 -- Convention: `app` column to distinguish data per project
 
 -- Leaderboard (app-scoped)

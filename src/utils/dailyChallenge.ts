@@ -9,7 +9,7 @@ export interface DailyChallenge {
   xpReward: number;
 }
 
-// Curated daily phrases — rotates based on day of year
+// Curated daily phrases - rotates based on day of year
 const DAILY_PHRASES: Omit<DailyChallenge, 'id' | 'date' | 'completed'>[] = [
   { phrase: 'Terima kasih banyak', hint: 'Ucapan syukur', targetLanguage: 'en', difficulty: 'easy', xpReward: 15 },
   { phrase: 'Saya sangat senang bertemu denganmu', hint: 'Sapaan hangat', targetLanguage: 'en', difficulty: 'easy', xpReward: 15 },

@@ -4,19 +4,19 @@ Aplikasi web untuk menerjemahkan teks dari Bahasa Indonesia ke 70+ bahasa dengan
 
 ## Fitur
 
-- 🌍 **70+ Bahasa Target** — Inggris, Jepang, Korea, Mandarin, dll.
-- 🎭 **10 Gaya Terjemahan** — Formal, Casual, Friendly, Professional, Simple, Persuasive + Premium (Slang, Poetic, Academic, Marketing)
-- 🎮 **Gamifikasi** — XP, Level, Streak, dan 9 Achievements
-- 🎯 **Tantangan Harian** — Frasa baru setiap hari dengan bonus XP
-- 📖 **Word of the Day** — Pelajari kosakata baru setiap hari
-- 📚 **Phrasebook** — Simpan dan organisir terjemahan berdasarkan topik
-- 🏆 **Leaderboard** — Bersaing dengan pengguna lain (via Supabase)
-- 🎤 **Voice Input** — Dikte teks dengan speech recognition
-- 🔊 **Text-to-Speech** — Dengarkan terjemahan
-- 📋 **Copy to Clipboard** — Salin terjemahan dengan satu klik
-- 💾 **Offline Cache** — Terjemahan yang pernah dibuat tersedia offline
-- 📱 **PWA** — Installable, offline-ready app shell
-- 📊 **Translation History** — Riwayat 50 terjemahan terakhir
+- 🌍 **70+ Bahasa Target** - Inggris, Jepang, Korea, Mandarin, dll.
+- 🎭 **10 Gaya Terjemahan** - Formal, Casual, Friendly, Professional, Simple, Persuasive + Premium (Slang, Poetic, Academic, Marketing)
+- 🎮 **Gamifikasi** - XP, Level, Streak, dan 9 Achievements
+- 🎯 **Tantangan Harian** - Frasa baru setiap hari dengan bonus XP
+- 📖 **Word of the Day** - Pelajari kosakata baru setiap hari
+- 📚 **Phrasebook** - Simpan dan organisir terjemahan berdasarkan topik
+- 🏆 **Leaderboard** - Bersaing dengan pengguna lain (via Supabase)
+- 🎤 **Voice Input** - Dikte teks dengan speech recognition
+- 🔊 **Text-to-Speech** - Dengarkan terjemahan
+- 📋 **Copy to Clipboard** - Salin terjemahan dengan satu klik
+- 💾 **Offline Cache** - Terjemahan yang pernah dibuat tersedia offline
+- 📱 **PWA** - Installable, offline-ready app shell
+- 📊 **Translation History** - Riwayat 50 terjemahan terakhir
 
 ## Tech Stack
 
@@ -43,7 +43,7 @@ PUBLIC_SUPABASE_URL=your_supabase_url
 PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-4. (Optional) Setup Supabase leaderboard table — jalankan migration:
+4. (Optional) Setup Supabase leaderboard table - jalankan migration:
 ```bash
 supabase db push
 ```

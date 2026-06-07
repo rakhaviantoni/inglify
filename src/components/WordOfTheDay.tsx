@@ -10,7 +10,7 @@ interface WordEntry {
   category: string;
 }
 
-// Curated vocabulary — rotates daily
+// Curated vocabulary - rotates daily
 const WORDS: WordEntry[] = [
   { id: '1', word: 'Serendipity', pronunciation: '/ˌser.ənˈdɪp.ə.ti/', meaning: 'Keberuntungan menemukan sesuatu yang bagus secara tidak sengaja', example: 'Finding this café was pure serendipity.', exampleTranslation: 'Menemukan kafe ini benar-benar kebetulan yang menyenangkan.', category: 'noun' },
   { id: '2', word: 'Eloquent', pronunciation: '/ˈel.ə.kwənt/', meaning: 'Fasih, pandai berbicara dengan indah dan meyakinkan', example: 'She gave an eloquent speech at the conference.', exampleTranslation: 'Dia memberikan pidato yang fasih di konferensi.', category: 'adjective' },
@@ -20,7 +20,7 @@ const WORDS: WordEntry[] = [
   { id: '6', word: 'Pragmatic', pronunciation: '/præɡˈmæt.ɪk/', meaning: 'Praktis, berpikir realistis', example: 'We need a pragmatic approach to this problem.', exampleTranslation: 'Kita membutuhkan pendekatan pragmatis untuk masalah ini.', category: 'adjective' },
   { id: '7', word: 'Ubiquitous', pronunciation: '/juːˈbɪk.wɪ.təs/', meaning: 'Ada di mana-mana', example: 'Smartphones have become ubiquitous in modern life.', exampleTranslation: 'Smartphone telah menjadi ada di mana-mana dalam kehidupan modern.', category: 'adjective' },
   { id: '8', word: 'Ambiguous', pronunciation: '/æmˈbɪɡ.ju.əs/', meaning: 'Bermakna ganda, tidak jelas', example: 'The message was ambiguous and confused everyone.', exampleTranslation: 'Pesannya bermakna ganda dan membingungkan semua orang.', category: 'adjective' },
-  { id: '9', word: 'Procrastinate', pronunciation: '/prəˈkræs.tɪ.neɪt/', meaning: 'Menunda-nunda pekerjaan', example: "Don't procrastinate — start working on it now.", exampleTranslation: 'Jangan menunda-nunda — mulai kerjakan sekarang.', category: 'verb' },
+  { id: '9', word: 'Procrastinate', pronunciation: '/prəˈkræs.tɪ.neɪt/', meaning: 'Menunda-nunda pekerjaan', example: "Don't procrastinate - start working on it now.", exampleTranslation: 'Jangan menunda-nunda - mulai kerjakan sekarang.', category: 'verb' },
   { id: '10', word: 'Empathy', pronunciation: '/ˈem.pə.θi/', meaning: 'Kemampuan merasakan perasaan orang lain', example: 'A good leader shows empathy toward their team.', exampleTranslation: 'Pemimpin yang baik menunjukkan empati terhadap timnya.', category: 'noun' },
   { id: '11', word: 'Versatile', pronunciation: '/ˈvɜː.sə.taɪl/', meaning: 'Serbaguna, bisa digunakan untuk banyak hal', example: 'Python is a versatile programming language.', exampleTranslation: 'Python adalah bahasa pemrograman yang serbaguna.', category: 'adjective' },
   { id: '12', word: 'Leverage', pronunciation: '/ˈlev.ər.ɪdʒ/', meaning: 'Memanfaatkan sesuatu untuk keuntungan', example: 'We can leverage AI to improve productivity.', exampleTranslation: 'Kita bisa memanfaatkan AI untuk meningkatkan produktivitas.', category: 'verb' },

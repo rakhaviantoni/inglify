@@ -26,7 +26,7 @@ function saveCache(entries: CacheEntry[]): void {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(entries));
   } catch {
-    // localStorage full — evict oldest entries
+    // localStorage full - evict oldest entries
     const trimmed = entries.slice(0, Math.floor(MAX_CACHE_SIZE / 2));
     localStorage.setItem(CACHE_KEY, JSON.stringify(trimmed));
   }
