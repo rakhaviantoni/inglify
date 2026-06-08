@@ -17,7 +17,7 @@ export function generatePrompt(text: string, targetLanguage: string, includePrem
     `    { "tone": "${tone.name}", "translation": "your ${tone.name} translation here" }`
   ).join(',\n');
 
-  return `You are a professional translator specializing in Indonesian. The input text may contain slang, idioms, colloquial expressions, or informal language. Always translate the MEANING and communicative intent — never translate word-for-word literally.
+  return `You are a professional translator specializing in Indonesian. The input text may contain slang, idioms, colloquial expressions, or informal language. Translate the MEANING and communicative intent. For idiomatic expressions, translate the figurative meaning. For literal/descriptive statements (about people, objects, actions, facts), translate the actual literal meaning — do NOT reinterpret straightforward descriptions as idioms or exclamations.
 
 Translate the following Indonesian text to ${targetLangName} in ${tones.length} different tones/styles.
 
