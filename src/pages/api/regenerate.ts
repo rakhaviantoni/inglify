@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import OpenAI from 'openai';
 import { SUPPORTED_LANGUAGES } from '../../types/translation';
 
-const MODELS = ['kimi-k2.6', 'MiniMax-M2.7-highspeed', 'gpt-5-nano'];
+const MODELS = ['deepseek-v4-flash', 'kimi-k2.6'];
 
 /**
  * Regenerate a single tone translation.

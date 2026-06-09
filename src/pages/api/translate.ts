@@ -4,9 +4,8 @@ import { generatePrompt } from '../../utils/generatePrompt';
 import { PREMIUM_TONES } from '../../types/translation';
 
 const MODELS = [
-  'kimi-k2.6',
-  'MiniMax-M2.7-highspeed',
-  'gpt-5-nano',
+  'deepseek-v4-flash',
+  'kimi-k2.6'
 ];
 
 const PREMIUM_TONE_NAMES = PREMIUM_TONES.map(t => t.name);
