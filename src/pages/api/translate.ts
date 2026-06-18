@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import OpenAI from 'openai';
 import { generatePrompt } from '../../utils/generatePrompt';
 import { PREMIUM_TONES } from '../../types/translation';
+import { createAzekhaAIConfig } from '../../lib/azekha-ai';
 
 const MODELS = [
   'deepseek-v4-flash',
@@ -35,9 +36,11 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    const aiConfig = createAzekhaAIConfig('inglify', 'https://ai.sumopod.com/v1', apiKey);
     const openai = new OpenAI({
-      apiKey,
-      baseURL: 'https://ai.sumopod.com/v1',
+      apiKey: aiConfig.apiKey,
+      baseURL: aiConfig.baseURL,
+      defaultHeaders: aiConfig.defaultHeaders,
     });
 
     // Always generate all tones (including premium) for preview

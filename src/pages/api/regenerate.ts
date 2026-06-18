@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import OpenAI from 'openai';
 import { SUPPORTED_LANGUAGES } from '../../types/translation';
+import { createAzekhaAIConfig } from '../../lib/azekha-ai';
 
 const MODELS = ['deepseek-v4-flash', 'mimo-v2.5'];
 
@@ -27,7 +28,8 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const openai = new OpenAI({ apiKey, baseURL: 'https://ai.sumopod.com/v1' });
+    const aiConfig = createAzekhaAIConfig('inglify', 'https://ai.sumopod.com/v1', apiKey);
+    const openai = new OpenAI({ apiKey: aiConfig.apiKey, baseURL: aiConfig.baseURL, defaultHeaders: aiConfig.defaultHeaders });
     const lang = SUPPORTED_LANGUAGES.find(l => l.code === targetLanguage);
     const langName = lang?.name || 'English';
 
